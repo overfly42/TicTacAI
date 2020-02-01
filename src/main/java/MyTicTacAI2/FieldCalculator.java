@@ -1,7 +1,9 @@
 package MyTicTacAI2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FieldCalculator {
     /**
@@ -42,13 +44,7 @@ public class FieldCalculator {
     }
 
     public static int calculateFieldValue(SingleFieldState[][] field, SingleFieldState type) {
-        List<SingleFieldState[]> lines = new ArrayList<>();
-        for (int i = 0; i < field.length; i++) {
-            lines.add(extractCol(field, i));
-            lines.add(extractRow(field, i));
-        }
-        lines.add(extractAntiDiagnal(field));
-        lines.add(exttactMainDiagonal(field));
+        var lines = getAllLines(field);
         return lines.stream().mapToInt(x -> {
             return calculateLineValue(x, type);
         }).sum();
@@ -65,5 +61,34 @@ public class FieldCalculator {
         else if (-max + 1 == value)
             value += value;
         return value;
+    }
+
+    public static boolean gameOver(SingleFieldState[][] field) {
+        var a = Arrays.stream(field).flatMap(Arrays::stream).collect(Collectors.toList());
+        return !a.contains(SingleFieldState.Empty);
+    }
+
+    public static SingleFieldState getWinner(SingleFieldState[][] field) {
+        if (!gameOver(field))
+            return SingleFieldState.Empty;
+        var lines = getAllLines(field);
+        var v = lines.stream().filter(x -> {
+            return Arrays.stream(x).distinct().count() == 1;
+        }).collect(Collectors.toList());
+        SingleFieldState winner = SingleFieldState.Empty;
+        if (v.size() == 1)
+            winner = v.get(0)[0];
+        return winner;
+    }
+
+    private static List<SingleFieldState[]> getAllLines(SingleFieldState[][] field) {
+        List<SingleFieldState[]> lines = new ArrayList<>();
+        for (int i = 0; i < field.length; i++) {
+            lines.add(extractCol(field, i));
+            lines.add(extractRow(field, i));
+        }
+        lines.add(extractAntiDiagnal(field));
+        lines.add(exttactMainDiagonal(field));
+        return lines;
     }
 }
