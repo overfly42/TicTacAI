@@ -12,20 +12,18 @@ import MyTicTacAI2.Interfaces.IGameStateObserver;
 import MyTicTacAI2.Interfaces.IObserver;
 import MyTicTacAI2.Interfaces.IPlayer;
 import MyTicTacAI2.Player.Human;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.util.Callback;
 
@@ -35,6 +33,8 @@ public class PrimaryController implements Initializable, IGameStateObserver {
     private ComboBox<IPlayer> PlayerASelector;
     @FXML
     private ComboBox<IPlayer> PlayerBSelector;
+    @FXML
+    private ComboBox<String> startPlayer;
     @FXML
     private Spinner<Integer> NumberOfGames;
     @FXML
@@ -80,6 +80,7 @@ public class PrimaryController implements Initializable, IGameStateObserver {
         PlayerBSelector.setDisable(running);
         NumberOfGames.setDisable(running);
         ObserverList.setDisable(running);
+        startPlayer.setDisable(running);
     }
 
     @Override
@@ -115,6 +116,9 @@ public class PrimaryController implements Initializable, IGameStateObserver {
         // box.setDisable(false);
         // ObserverList.getItems().add(box);
         // }
+        startPlayer.getItems().add("Spieler A");
+        startPlayer.getItems().add("Spieler B");
+        startPlayer.setValue("SpielerA");
     }
 
     @Override

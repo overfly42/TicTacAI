@@ -26,11 +26,12 @@
                   <ComboBox fx:id="PlayerASelector" layoutX="81.0" layoutY="38.0" prefWidth="150.0" />
                   <Label layoutX="14.0" layoutY="43.0" text="Spieler A" />
                   <Label layoutX="258.0" layoutY="43.0" text="Spieler B" />
-                  <Button fx:id="startStop" layoutX="48.0" layoutY="181.0" onAction="#toggleRunningState" text="Start" />
+                  <Button fx:id="startStop" layoutX="73.0" layoutY="219.0" onAction="#toggleRunningState" text="Start" />
                   <Spinner fx:id="NumberOfGames" editable="true" layoutX="29.0" layoutY="119.0" />
                   <Label layoutX="26.0" layoutY="84.0" text="Number Of Games:" />
                   <ListView fx:id="ObserverList" layoutX="258.0" layoutY="119.0" prefHeight="200.0" prefWidth="200.0" />
                   <Label layoutX="287.0" layoutY="84.0" text="Observer" />
+                  <ComboBox fx:id="startPlayer" layoutX="29.0" layoutY="167.0" prefHeight="26.0" prefWidth="171.0" />
                </children>
             </AnchorPane>
          </center>
