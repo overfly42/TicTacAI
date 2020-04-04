@@ -1,6 +1,6 @@
 package MyTicTacAI2.Interfaces;
 
-import MyTicTacAI2.SingleFieldState;
+import MyTicTacAI2.UI.SingleFieldState;
 
 public interface IObserver {
     void introducePlayer(IPlayer palyer);

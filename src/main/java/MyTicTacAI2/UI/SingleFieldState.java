@@ -1,4 +1,4 @@
-package MyTicTacAI2;
+package MyTicTacAI2.UI;
 
 public enum SingleFieldState {
     X,

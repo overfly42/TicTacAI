@@ -1,6 +1,6 @@
 package MyTicTacAI2.Game;
 
-abstract class GameState
+public abstract class GameState
 {
 
 }

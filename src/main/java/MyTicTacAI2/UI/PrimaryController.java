@@ -1,4 +1,4 @@
-package MyTicTacAI2;
+package MyTicTacAI2.UI;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import MyTicTacAI2.Game.GameExecutionState;
 import MyTicTacAI2.Interfaces.IGameController;
 import MyTicTacAI2.Interfaces.IGameStateObserver;
 import MyTicTacAI2.Interfaces.IObserver;
@@ -122,8 +123,8 @@ public class PrimaryController implements Initializable, IGameStateObserver {
     }
 
     @Override
-    public void switchedGameStateTo(GameState newState) {
-        if (newState == GameState.Finished)
+    public void switchedGameStateTo(GameExecutionState newState) {
+        if (newState == GameExecutionState.Finish)
             startNewGame();
     }
 

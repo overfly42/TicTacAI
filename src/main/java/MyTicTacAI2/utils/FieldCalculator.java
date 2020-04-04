@@ -1,9 +1,11 @@
-package MyTicTacAI2;
+package MyTicTacAI2.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import MyTicTacAI2.UI.SingleFieldState;
 
 public class FieldCalculator {
     /**

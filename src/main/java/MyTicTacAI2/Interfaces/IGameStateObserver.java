@@ -1,7 +1,7 @@
 package MyTicTacAI2.Interfaces;
 
-import MyTicTacAI2.GameState;
+import MyTicTacAI2.Game.GameExecutionState;
 
 public interface IGameStateObserver {
-void switchedGameStateTo(GameState newState);
+    public void switchedGameStateTo(GameExecutionState newState);
 }

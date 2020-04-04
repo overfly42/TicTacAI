@@ -1,6 +1,6 @@
 package MyTicTacAI2.Player;
 
-import MyTicTacAI2.SingleFieldState;
+import MyTicTacAI2.UI.SingleFieldState;
 import MyTicTacAI2.Interfaces.IGameController;
 import MyTicTacAI2.Interfaces.IPlayer;
 

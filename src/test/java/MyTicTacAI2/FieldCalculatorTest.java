@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import MyTicTacAI2.UI.SingleFieldState;
+import MyTicTacAI2.utils.FieldCalculator;
+
 public class FieldCalculatorTest {
     @Test
     public void testExtractRow() {
