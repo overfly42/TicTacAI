@@ -4,10 +4,14 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
+import MyTicTacAI2.Game.SingleGameController;
 import MyTicTacAI2.Game.GameExecutionState;
+import MyTicTacAI2.Game.MultiGameController;
 import MyTicTacAI2.Interfaces.IGameController;
 import MyTicTacAI2.Interfaces.IGameStateObserver;
 import MyTicTacAI2.Interfaces.IObserver;
@@ -25,15 +29,16 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.util.Callback;
 
 public class PrimaryController implements Initializable, IGameStateObserver {
 
     @FXML
-    private ComboBox<IPlayer> PlayerASelector;
+    private ComboBox<String> PlayerASelector;
     @FXML
-    private ComboBox<IPlayer> PlayerBSelector;
+    private ComboBox<String> PlayerBSelector;
     @FXML
     private ComboBox<String> startPlayer;
     @FXML
@@ -45,27 +50,26 @@ public class PrimaryController implements Initializable, IGameStateObserver {
     @FXML
     private Label stateDisplay;
     private boolean running;
-    private List<Class<? extends IPlayer>> potentialPlayer;
     private List<Class<? extends IObserver>> gameOberserver;
     private List<IObserver> activeObservers;
-    private IGameController gameController;
-    private int games;
+    private Map<String, Class<? extends IPlayer>> potentialPlayer;
+    private MultiGameController gameController;
 
     public PrimaryController() {
         running = false;
-        potentialPlayer = new ArrayList<>();
+        potentialPlayer = new HashMap<>();
         gameOberserver = new ArrayList<>();
         activeObservers = new ArrayList<>();
-        potentialPlayer.add(Human.class);
+        potentialPlayer.put("Human", Human.class);
         gameOberserver.add(Human.class);
+        gameController = new MultiGameController();
     }
 
     @FXML
     private void toggleRunningState() throws IOException {
         running = !running;
         setObjectsEnabled();
-        games = NumberOfGames.getValue();
-        gameController.addGameStateObserver(this);
+        // gameController.addGameStateObserver(this);
         activeObservers.clear();
         if (running) {
             for (var x : ObserverList.getItems()) {
@@ -86,16 +90,21 @@ public class PrimaryController implements Initializable, IGameStateObserver {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
-        for (Class<? extends IPlayer> player : potentialPlayer) {
-            try {
-                PlayerASelector.getItems().add(player.getDeclaredConstructor().newInstance());
-                PlayerBSelector.getItems().add(player.getDeclaredConstructor().newInstance());
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-                    | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                (new Alert(AlertType.ERROR, "Could not add Player Type " + player.toString())).showAndWait();
-                e.printStackTrace();
-            }
-        }
+        PlayerASelector.getItems().addAll(potentialPlayer.keySet());
+        PlayerBSelector.getItems().addAll(potentialPlayer.keySet());
+        // for (Class<? extends IPlayer> player : potentialPlayer) {
+        // try {
+        // PlayerASelector.getItems().add(player.getDeclaredConstructor().newInstance());
+        // PlayerBSelector.getItems().add(player.getDeclaredConstructor().newInstance());
+        // } catch (InstantiationException | IllegalAccessException |
+        // IllegalArgumentException
+        // | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+        // (new Alert(AlertType.ERROR, "Could not add Player Type " +
+        // player.toString())).showAndWait();
+        // e.printStackTrace();
+        // }
+        // }
+
         ObserverList.setCellFactory(CheckBoxListCell.forListView(new Callback<IObserver, ObservableValue<Boolean>>() {
 
             @Override
@@ -110,16 +119,21 @@ public class PrimaryController implements Initializable, IGameStateObserver {
         }));
 
         ObserverList.getItems().add(new Human());
+        PlayerASelector.setValue(PlayerASelector.getItems().get(0));
+        PlayerBSelector.setValue(PlayerBSelector.getItems().get(0));
         // for(Class<? extends IObserver> observer:gameOberserver)
         // {
         // CheckBoxListCell<String> box = new CheckBoxListCell<>();
 
         // box.setDisable(false);
         // ObserverList.getItems().add(box);
-        // }
+        //
         startPlayer.getItems().add("Spieler A");
         startPlayer.getItems().add("Spieler B");
         startPlayer.setValue("SpielerA");
+
+        IntegerSpinnerValueFactory spinnerInit = new IntegerSpinnerValueFactory(1, 100, 1);
+        NumberOfGames.setValueFactory(spinnerInit);
     }
 
     @Override
@@ -129,9 +143,9 @@ public class PrimaryController implements Initializable, IGameStateObserver {
     }
 
     private void startNewGame() {
-        if (games < 0)
-            return;
-        games--;
-        gameController.startGame(PlayerASelector.getValue(), PlayerBSelector.getValue(), activeObservers);
+        gameController.startGame(potentialPlayer.get(PlayerASelector.getValue()),
+         potentialPlayer.get(PlayerBSelector.getValue()),
+          null,
+          NumberOfGames.getValue().intValue());
     }
 }
