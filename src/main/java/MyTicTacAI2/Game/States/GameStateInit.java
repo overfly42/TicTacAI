@@ -2,13 +2,13 @@ package MyTicTacAI2.Game.States;
 
 import MyTicTacAI2.Game.GameState;
 import MyTicTacAI2.Interfaces.IGameState;
-import MyTicTacAI2.Interfaces.IGameStateMaschine;
+import MyTicTacAI2.Interfaces.IGameStateMachine;
 
 public class GameStateInit implements IGameState {
 
-    IGameStateMaschine stateMaschine;
+    IGameStateMachine stateMaschine;
 
-    public GameStateInit(IGameStateMaschine gameStateMachine) {
+    public GameStateInit(IGameStateMachine gameStateMachine) {
         stateMaschine = gameStateMachine;
     }
 
@@ -20,7 +20,7 @@ public class GameStateInit implements IGameState {
 
     @Override
     public void enter() {
-        stateMaschine.setToState(GameState.Ready);
+        stateMaschine.setToState(GameState.StartSession);
     }
 
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import MyTicTacAI2.Communication.QueueInterface;
+import MyTicTacAI2.Game.GameStateMachine;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
-
 
 public class PrimaryController implements Initializable {
 
@@ -43,17 +44,29 @@ public class PrimaryController implements Initializable {
     private boolean running;
     private List<SimpleStringProperty> fieldView;
 
+    private GameStateMachine stateMachine;
+    private QueueInterface queue;
+
     public PrimaryController() {
         running = false;
         fieldView = new ArrayList<>();
-        for(int i = 0; i < 9;i++)
+        for (int i = 0; i < 9; i++)
             fieldView.add(new SimpleStringProperty());
+        queue = new QueueInterface();
+        stateMachine = new GameStateMachine(queue);
+
     }
 
     @FXML
-    private void toggleRunningState()  {
+    private void toggleRunningState() {
         running = !running;
         setObjectsEnabled();
+        if (stateMachine.isActivated())
+            stateMachine.stopStateMaschine();
+        else {
+            stateMachine.getBoard().setMaxGames(NumberOfGames.getValue());
+            stateMachine.startStateMaschine();
+        }
     }
 
     private void setObjectsEnabled() {

@@ -14,6 +14,7 @@
 5) Training of AI
 6) Storage and Reload functions of trained AI and Statistics (for continues Training)
 =Design=
+@Obsolete as the design switched to Rabbit MQ
 The Design should handle the different requirements. For this the requirements have to split the software into sepate modules:
 1) The Game with the game logic and an entry point for player types
 1.1) There should be a view to the game board and statistics
@@ -49,3 +50,27 @@ Has to do the following
 ===Game Controller===
 For testing purposes losing the coupling
 1) get the action from the player
+==Communication==
+00 Server: StartSession
+01 Server:Registration open
+02 Client 1:Register: ID1
+03 Server:ID: Registration success
+04 Client 2:Register: ID1
+05 Server:ID:Registration Rejected
+06 Client 2:Register: ID2
+07 Server:ID: Registration success
+08 Server: @all:Start Game
+09 Server: ID1: your turn:
+10 Client 1: Set:X:Y
+11 Server (move OK): @all:set:ID1:X:Y
+12 Server (move NOK): ID1:Move Rejected
+13 |-> Back to 10
+14 Server: ID2: your turn
+15 Client 2: Set:X:Y
+16 Server (move OK): @all:set:ID2:X:Y
+17 Server (move NOK): ID2:Move Rejected
+18 |-> Back to 15
+19 Server (Game ended) @all:game Done:ID1/ID2/Tie
+20 Server (Session ended) @all:statistics:ID1=N;ID2=M;Tie=K (with N wins of ID1, M wins of ID2 and K ties)
+21 Server (Game Continue)-> 10
+

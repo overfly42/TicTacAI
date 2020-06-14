@@ -5,10 +5,8 @@ package MyTicTacAI2.Game;
 public enum GameState
 {
     Init,//Setting everything up
-    Ready,//Waiting for User to start
-    Preperation,//Prepair for waiting on player
-    WaitForPlayer,//Waiting for players
     StartSession,//Clear Statistics and prepairs the games
+    WaitForPlayer,//Waiting for players
     StartGame,//Starts a single game
     WaitForAction,//Awaits for the players actions and verifyes them
     CheckField,//Checks if a further move is possible 

@@ -4,34 +4,73 @@ import java.util.HashMap;
 import java.util.Map;
 
 import MyTicTacAI2.Game.States.*;
+import MyTicTacAI2.Interfaces.IComQueue;
 import MyTicTacAI2.Interfaces.IGameState;
-import MyTicTacAI2.Interfaces.IGameStateMaschine;
+import MyTicTacAI2.Interfaces.IGameStateMachine;
 
-public class GameStateMachine implements IGameStateMaschine{
-    private Map<GameState, IGameState> states;
+public class GameStateMachine implements IGameStateMachine {
+    private final Map<GameState, IGameState> states;
     private IGameState currentState;
+    private final GameBoard board;
+    private IComQueue queue;
+    private boolean stateMaschineActivationState;
 
-    public GameStateMachine() {
+    public GameStateMachine(IComQueue com) {
+        queue = com;
+        board = new GameBoard();
+
         states = new HashMap<>();
-        states.put(GameState.CheckField,new GameStateCheckField());
-        states.put(GameState.EndGame,new GameStateEndGame());
-        states.put(GameState.EndSession,new GameStateEndSession());
-        states.put(GameState.Init,new GameStateInit(this));
-        states.put(GameState.Preperation,new GameStatePreperation());
-        states.put(GameState.Ready,new GameStateReady());
-        states.put(GameState.StartGame,new GameStateStartGame());
-        states.put(GameState.StartSession,new GameStateStartSession());
-        states.put(GameState.WaitForAction,new GameStateWaitForAction());
-        states.put(GameState.WaitForPlayer,new GameStateWaitForPlayer());
+        // states.put(GameState.CheckField, new GameStateCheckField());
+        // states.put(GameState.EndGame, new GameStateEndGame());
+        // states.put(GameState.EndSession, new GameStateEndSession());
+        states.put(GameState.StartSession, new GameStateStartSession(this));
+        states.put(GameState.Init, new GameStateInit(this));
+        states.put(GameState.WaitForPlayer, new GameStateWaitForPlayer(this, queue));
+        // states.put(GameState.StartGame, new GameStateStartGame());
+        // states.put(GameState.WaitForAction, new GameStateWaitForAction());
 
-        currentState = states.get(GameState.Init);
+
+        stateMaschineActivationState = false;
     }
 
     @Override
-    public void setToState(GameState next) {
+    public void setToState(final GameState next) {
         currentState.leave();
-        currentState =states.get(next);
+        currentState = states.get(next);
         currentState.enter();
 
+    }
+
+    @Override
+    public GameBoard getBoard() {
+
+        return board;
+    }
+
+    @Override
+    public GameState getCurrentState() {
+        for (var pair : states.entrySet())
+            if (pair.getValue() == currentState)
+                return pair.getKey();
+        return null;
+    }
+
+    @Override
+    public boolean isActivated() {
+        return stateMaschineActivationState;
+    }
+
+    @Override
+    public void startStateMaschine() {
+        if (stateMaschineActivationState)
+            return;
+        stateMaschineActivationState = true;
+        currentState = states.get(GameState.Init);
+        currentState.enter();
+    }
+
+    @Override
+    public void stopStateMaschine() {
+        stateMaschineActivationState = false;
     }
 }
