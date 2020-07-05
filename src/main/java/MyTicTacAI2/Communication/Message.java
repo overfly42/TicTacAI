@@ -12,6 +12,5 @@ public enum Message {
     Set,  //With ID,X,Y ->from Client or to all
     SetRejected, //With ID
     EndGame,//With Winner ID1/ID2/Tie
-    Statistics, //With results
     EndSession//End of comunication
 }

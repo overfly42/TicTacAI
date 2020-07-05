@@ -78,6 +78,9 @@ public class FieldCalculator {
             return Arrays.stream(x).distinct().count() == 1;
         }).collect(Collectors.toList());
         FieldState winner = FieldState.Empty;
+        v.removeIf(x -> {
+            return x[0] == FieldState.Empty;
+        });
         if (v.size() == 1)
             winner = v.get(0)[0];
         else
