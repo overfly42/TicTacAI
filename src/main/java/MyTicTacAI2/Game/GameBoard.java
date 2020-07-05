@@ -15,6 +15,7 @@ public class GameBoard {
     private String playerB;
     private FieldState[][] board;
     private boolean startPlayer;
+    private boolean activePlayer;
 
     public GameBoard() {
         startSession();
@@ -74,6 +75,14 @@ public class GameBoard {
             throw new Exception("Both players are already registered");
     }
 
+    public FieldState getPlayerFor(String playerName) {
+        if (playerA.equals(playerName))
+            return FieldState.PlayerA;
+        if (playerB.equals(playerName))
+            return FieldState.PlayerB;
+        return FieldState.Empty;
+    }
+
     public int getNumberOfPlayer() {
         int cnt = 0;
         cnt += playerA == null ? 0 : 1;
@@ -95,5 +104,41 @@ public class GameBoard {
 
     public void switchStartPlayer() {
         startPlayer = !startPlayer;
+        activePlayer = startPlayer;
+    }
+
+    public String getActivePlayer() {
+        return activePlayer ? playerA : playerB;
+    }
+
+    public void switchActivePlayer() {
+        activePlayer = !activePlayer;
+    }
+
+    public FieldState getStateOfField(int x, int y) {
+        if (!bordersMet(x, y))
+            return null;
+        return board[x][y];
+    }
+
+    public boolean setTurn(String player, int x, int y) {
+        if (!bordersMet(x, y))
+            return false;
+        if (board[x][y] != FieldState.Empty)
+            return false;
+        board[x][y] = getPlayerFor(player);
+        return true;
+    }
+
+    private boolean bordersMet(int x, int y) {
+        if (x < 0 || x >= board.length)
+            return false;
+        if (y < 0 || y >= board[0].length)
+            return false;
+        return true;
+    }
+    public FieldState[][] getFieldCopy()
+    {
+        return board.clone();
     }
 }

@@ -57,7 +57,7 @@ public abstract class AbstractStateTest<STATE extends IGameState> implements ICo
     @Override
     public void removeListener(IChangeListener listener) {
         if (comPartner == listener)
-            listener = null;
+            comPartner = null;
     }
 
     @Override

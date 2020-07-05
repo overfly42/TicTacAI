@@ -8,6 +8,7 @@ public class Translator {
         switch (msg) {
             case Register:
             case RegisterRejected:
+            case Turn:
                 result = content.get(Keys.ID) + ":" + msg.toString();
                 break;
             case RegisterOpen:

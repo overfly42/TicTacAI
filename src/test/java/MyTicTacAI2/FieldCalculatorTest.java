@@ -7,16 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import MyTicTacAI2.UI.SingleFieldState;
+import MyTicTacAI2.Game.FieldState;
 import MyTicTacAI2.utils.FieldCalculator;
 
 public class FieldCalculatorTest {
     @Test
     public void testExtractRow() {
-        final SingleFieldState[][] field = { { SingleFieldState.Empty, SingleFieldState.Empty, SingleFieldState.Empty },
-                { SingleFieldState.X, SingleFieldState.Empty, SingleFieldState.O },
-                { SingleFieldState.Empty, SingleFieldState.Empty, SingleFieldState.Empty } };
-        final SingleFieldState[] result = FieldCalculator.extractRow(field, 1);
+        final FieldState[][] field = { { FieldState.Empty, FieldState.Empty, FieldState.Empty },
+                { FieldState.PlayerA, FieldState.Empty, FieldState.PlayerB },
+                { FieldState.Empty, FieldState.Empty, FieldState.Empty } };
+        final FieldState[] result = FieldCalculator.extractRow(field, 1);
         assertNotNull(result);
         assertEquals(result.length, field[1].length);
         for (int i = 0; i < result.length; i++) {
@@ -27,10 +27,10 @@ public class FieldCalculatorTest {
 
     @Test
     public void testExtractCol() {
-        final SingleFieldState[][] field = { { SingleFieldState.Empty, SingleFieldState.Empty, SingleFieldState.Empty },
-                { SingleFieldState.X, SingleFieldState.Empty, SingleFieldState.O },
-                { SingleFieldState.Empty, SingleFieldState.Empty, SingleFieldState.Empty } };
-        final SingleFieldState[] result = FieldCalculator.extractCol(field, 2);
+        final FieldState[][] field = { { FieldState.Empty, FieldState.Empty, FieldState.Empty },
+                { FieldState.PlayerA, FieldState.Empty, FieldState.PlayerB },
+                { FieldState.Empty, FieldState.Empty, FieldState.Empty } };
+        final FieldState[] result = FieldCalculator.extractCol(field, 2);
         assertNotNull(result);
         assertEquals(result.length, field[1].length);
         for (int i = 0; i < result.length; i++) {
@@ -41,11 +41,11 @@ public class FieldCalculatorTest {
 
     @Test
     public void testExtractMainDiagonal() {
-        final SingleFieldState[][] field = { { SingleFieldState.X, SingleFieldState.Empty, SingleFieldState.O },
-                { SingleFieldState.X, SingleFieldState.O, SingleFieldState.O },
-                { SingleFieldState.Empty, SingleFieldState.Empty, SingleFieldState.X } };
-        SingleFieldState[] expected = { SingleFieldState.X, SingleFieldState.O, SingleFieldState.X };
-        final SingleFieldState[] result = FieldCalculator.exttactMainDiagonal(field);
+        final FieldState[][] field = { { FieldState.PlayerA, FieldState.Empty, FieldState.PlayerB },
+                { FieldState.PlayerA, FieldState.PlayerB, FieldState.PlayerB },
+                { FieldState.Empty, FieldState.Empty, FieldState.PlayerA } };
+        FieldState[] expected = { FieldState.PlayerA, FieldState.PlayerB, FieldState.PlayerA };
+        final FieldState[] result = FieldCalculator.exttactMainDiagonal(field);
         assertNotNull(result);
         assertEquals(result.length, field[1].length);
         for (int i = 0; i < result.length; i++) {
@@ -56,11 +56,11 @@ public class FieldCalculatorTest {
 
     @Test
     public void testExtractAntiDiagonal() {
-        final SingleFieldState[][] field = { { SingleFieldState.X, SingleFieldState.Empty, SingleFieldState.O },
-                { SingleFieldState.X, SingleFieldState.O, SingleFieldState.O },
-                { SingleFieldState.Empty, SingleFieldState.Empty, SingleFieldState.X } };
-        SingleFieldState[] expected = { SingleFieldState.Empty, SingleFieldState.O, SingleFieldState.O };
-        final SingleFieldState[] result = FieldCalculator.extractAntiDiagnal(field);
+        final FieldState[][] field = { { FieldState.PlayerA, FieldState.Empty, FieldState.PlayerB },
+                { FieldState.PlayerA, FieldState.PlayerB, FieldState.PlayerB },
+                { FieldState.Empty, FieldState.Empty, FieldState.PlayerA } };
+        FieldState[] expected = { FieldState.Empty, FieldState.PlayerB, FieldState.PlayerB };
+        final FieldState[] result = FieldCalculator.extractAntiDiagnal(field);
         assertNotNull(result);
         assertEquals(result.length, field[1].length);
         for (int i = 0; i < result.length; i++) {
@@ -71,9 +71,9 @@ public class FieldCalculatorTest {
 
     @Test
     public void testCalculateField() {
-        final SingleFieldState[][] field = { { SingleFieldState.X, SingleFieldState.Empty, SingleFieldState.O },
-                { SingleFieldState.X, SingleFieldState.O, SingleFieldState.O },
-                { SingleFieldState.Empty, SingleFieldState.Empty, SingleFieldState.X } };
+        final FieldState[][] field = { { FieldState.PlayerA, FieldState.Empty, FieldState.PlayerB },
+                { FieldState.PlayerA, FieldState.PlayerB, FieldState.PlayerB },
+                { FieldState.Empty, FieldState.Empty, FieldState.PlayerA } };
         /*
          * row(0)->x:0|o:0 row(1)->x:-1|o:1 row(2) x:1|o:-1 col(2) x:-1|o:1
          * col(1)x:-1|o:1 col(0) x:2|o:-4 Main Diagonal ->x:1|o:-1 Anti Diagonal
@@ -81,31 +81,31 @@ public class FieldCalculatorTest {
          */
         int fieldValueForX = -3;
         int fieldValueForO = -1;
-        assertEquals(fieldValueForX, FieldCalculator.calculateFieldValue(field, SingleFieldState.X));
-        assertEquals(fieldValueForO, FieldCalculator.calculateFieldValue(field, SingleFieldState.O));
+        assertEquals(fieldValueForX, FieldCalculator.calculateFieldValue(field, FieldState.PlayerA));
+        assertEquals(fieldValueForO, FieldCalculator.calculateFieldValue(field, FieldState.PlayerB));
     }
 
     @Test
     public void testEndOfGame() {
-        SingleFieldState[][] field = { { SingleFieldState.X, SingleFieldState.O, SingleFieldState.X },
-                { SingleFieldState.O, SingleFieldState.X, SingleFieldState.X },
-                { SingleFieldState.O, SingleFieldState.X, SingleFieldState.O } };
+        FieldState[][] field = { { FieldState.PlayerA, FieldState.PlayerB, FieldState.PlayerA },
+                { FieldState.PlayerB, FieldState.PlayerA, FieldState.PlayerA },
+                { FieldState.PlayerB, FieldState.PlayerA, FieldState.PlayerB } };
         assertTrue(FieldCalculator.gameOver(field));
-        field[0][0] = SingleFieldState.Empty;
+        field[0][0] = FieldState.Empty;
         assertFalse(FieldCalculator.gameOver(field));
     }
 @Test
     public void testWinner() {
-        SingleFieldState[][] field = { { SingleFieldState.X, SingleFieldState.O, SingleFieldState.X },
-                { SingleFieldState.O, SingleFieldState.X, SingleFieldState.X },
-                { SingleFieldState.O, SingleFieldState.X, SingleFieldState.O } };
-        assertEquals(SingleFieldState.Empty, FieldCalculator.getWinner(field));
-        field[0][0] = SingleFieldState.O;
-        assertEquals(SingleFieldState.O, FieldCalculator.getWinner(field));
-        field[0][0] = SingleFieldState.X;
-        field[0][2] = SingleFieldState.O;
-        field[0][1] = SingleFieldState.X;
-        assertEquals(SingleFieldState.X, FieldCalculator.getWinner(field));
+        FieldState[][] field = { { FieldState.PlayerA, FieldState.PlayerB, FieldState.PlayerA },
+                { FieldState.PlayerB, FieldState.PlayerA, FieldState.PlayerA },
+                { FieldState.PlayerB, FieldState.PlayerA, FieldState.PlayerB } };
+        assertEquals(FieldState.Empty, FieldCalculator.getWinner(field));
+        field[0][0] = FieldState.PlayerB;
+        assertEquals(FieldState.PlayerB, FieldCalculator.getWinner(field));
+        field[0][0] = FieldState.PlayerA;
+        field[0][2] = FieldState.PlayerB;
+        field[0][1] = FieldState.PlayerA;
+        assertEquals(FieldState.PlayerA, FieldCalculator.getWinner(field));
         
     }
 }

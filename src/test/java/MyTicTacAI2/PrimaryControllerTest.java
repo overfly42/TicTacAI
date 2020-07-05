@@ -17,28 +17,28 @@ import javafx.scene.input.MouseButton;
 import javafx.stage.Stage;
 
 public class PrimaryControllerTest extends ApplicationTest {
-    @Override
-    public void start(Stage stage) throws Exception {
-        Parent mainNode = FXMLLoader.load(PrimaryController.class.getResource("primary.fxml"));
-        stage.setScene(new Scene(mainNode));
-        stage.show();
-        stage.toFront();
-    }
-    @Before
-    public void setUp() throws Exception
-    {
-    }
-    @After
-    public void tearDown() throws Exception
-    {
-       FxToolkit.hideStage();
-       release(new KeyCode[]{});
-       release(new MouseButton[]{});
-    }
-    @Test
-    public void testtest()
-    {
-        clickOn("#startStop");
-        assertTrue(true);
-    }
+    // @Override
+    // public void start(Stage stage) throws Exception {
+    //     Parent mainNode = FXMLLoader.load(PrimaryController.class.getResource("primary.fxml"));
+    //     stage.setScene(new Scene(mainNode));
+    //     stage.show();
+    //     stage.toFront();
+    // }
+    // @Before
+    // public void setUp() throws Exception
+    // {
+    // }
+    // @After
+    // public void tearDown() throws Exception
+    // {
+    //    FxToolkit.hideStage();
+    //    release(new KeyCode[]{});
+    //    release(new MouseButton[]{});
+    // }
+    // @Test
+    // public void testtest()
+    // {
+    //     clickOn("#startStop");
+    //     assertTrue(true);
+    // }
 }
