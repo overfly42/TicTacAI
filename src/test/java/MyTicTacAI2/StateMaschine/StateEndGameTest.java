@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import MyTicTacAI2.Communication.Keys;
 import MyTicTacAI2.Communication.Message;
+import MyTicTacAI2.Game.FieldState;
 import MyTicTacAI2.Game.GameBoard;
 import MyTicTacAI2.Game.GameState;
 import MyTicTacAI2.Game.States.GameStateEndGame;
@@ -33,8 +34,11 @@ public class StateEndGameTest extends AbstractStateTest<GameStateEndGame> {
             board.addPlayer(P2);
         } catch (Exception e) {
         }
-        for (int i = 0; i < currentNumOfGames; i++)
+        board.startGame();
+        for (int i = 1; i < currentNumOfGames; i++) {
+            board.endGame();
             board.startGame();
+        }
         assertNull(lastMessage);
         assertNull(lastStateSwitchedTo);
         board.setTurn(P1, 0, 0);
@@ -42,12 +46,24 @@ public class StateEndGameTest extends AbstractStateTest<GameStateEndGame> {
         board.setTurn(P1, 0, 2);
         board.setTurn(P2, 1, 0);
         board.setTurn(P2, 1, 1);
-
     }
 
     private void checkMessageWin(String player) {
         testObject = new GameStateEndGame(this, this);
+        int empty = board.getWins(FieldState.Empty);
+        int playerA = board.getWins(FieldState.PlayerA);
+        int playerB = board.getWins(FieldState.PlayerB);
         testObject.enter();
+        if (board.getPlayerFor(player) == FieldState.PlayerA) {
+            assertEquals(playerA + 1, board.getWins(FieldState.PlayerA),
+                    "At a Win PlayerA shall be increased, not another");
+            assertEquals(playerB, board.getWins(FieldState.PlayerB), "At a Tie Ties shall be increased, not player B");
+        } else {
+            assertEquals(playerA, board.getWins(FieldState.PlayerA), "At a Tie Ties shall be increased, not player A");
+            assertEquals(playerB, board.getWins(FieldState.PlayerB) - 1,
+                    "At a Tie Ties shall be increased, not player B");
+        }
+        assertEquals(empty, board.getWins(FieldState.Empty), "At a Tie Ties shall be increased");
         assertEquals(Message.EndGame, lastMessage, "Information that the game has ended");
         assertTrue(lastMessageContent.containsKey(Keys.ID));
         assertEquals(player, lastMessageContent.get(Keys.ID),
@@ -67,7 +83,13 @@ public class StateEndGameTest extends AbstractStateTest<GameStateEndGame> {
         board.setTurn(b, 2, 1);
         board.setTurn(a, 2, 2);
         testObject = new GameStateEndGame(this, this);
+        int empty = board.getWins(FieldState.Empty);
+        int playerA = board.getWins(FieldState.PlayerA);
+        int playerB = board.getWins(FieldState.PlayerB);
         testObject.enter();
+        assertEquals(playerA, board.getWins(FieldState.PlayerA), "At a Tie Ties shall be increased, not player A");
+        assertEquals(playerB, board.getWins(FieldState.PlayerB), "At a Tie Ties shall be increased, not player B");
+        assertEquals(empty, board.getWins(FieldState.Empty) - 1, "At a Tie Ties shall be increased");
         assertEquals(Message.EndGame, lastMessage, "Information that the game has ended");
         assertTrue(lastMessageContent.containsKey(Keys.Reason));
         assertEquals("TIE", lastMessageContent.get(Keys.Reason),
@@ -104,15 +126,18 @@ public class StateEndGameTest extends AbstractStateTest<GameStateEndGame> {
         checkMessageWin(a);
         assertEquals(GameState.EndSession, lastStateSwitchedTo, "As there is no game left over the session is ended");
     }
+
     @Test
     public void testSessionEndBWins() {
         setBoardState(a, b, 5, 5);
         checkMessageWin(a);
         assertEquals(GameState.EndSession, lastStateSwitchedTo, "As there is no game left over the session is ended");
     }
+
     @Test
     public void testSessionEndTie() {
         setBoardState(a, b, 5, 4);
+        board.endGame();
         checkMessageTie();
         assertEquals(GameState.EndSession, lastStateSwitchedTo, "As there is no game left over the session is ended");
     }

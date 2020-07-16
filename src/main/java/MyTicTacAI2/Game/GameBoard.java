@@ -1,9 +1,12 @@
 package MyTicTacAI2.Game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import MyTicTacAI2.Interfaces.IChangeListener;
+import MyTicTacAI2.utils.FieldCalculator;
 
 public class GameBoard {
 
@@ -16,10 +19,14 @@ public class GameBoard {
     private FieldState[][] board;
     private boolean startPlayer;
     private boolean activePlayer;
+    private boolean gameInProgress;
+    private Map<FieldState, Integer> statistic;
 
     public GameBoard() {
         startSession();
         startPlayer = true;
+        gameInProgress = false;
+        statistic = new HashMap<>();
     }
 
     public int getMaxGames() {
@@ -32,12 +39,25 @@ public class GameBoard {
     }
 
     public void startGame() {
+        if (gameInProgress)
+            return;
         currentGame++;
         updateObserver();
         board = new FieldState[FIELD_SIZE][FIELD_SIZE];
         for (int i = 0; i < FIELD_SIZE; i++)
             for (int j = 0; j < FIELD_SIZE; j++)
                 board[i][j] = FieldState.Empty;
+        statistic.clear();
+        statistic.put(FieldState.Empty, 0);
+        statistic.put(FieldState.PlayerA, 0);
+        statistic.put(FieldState.PlayerB, 0);
+        gameInProgress = true;
+    }
+
+    public void endGame() {
+        gameInProgress = false;
+        var updateKey = FieldCalculator.getWinner(board);
+        statistic.put(updateKey, statistic.get(updateKey) + 1);
     }
 
     public void startSession() {
@@ -137,8 +157,13 @@ public class GameBoard {
             return false;
         return true;
     }
-    public FieldState[][] getFieldCopy()
-    {
+
+    public FieldState[][] getFieldCopy() {
         return board.clone();
     }
+
+    public int getWins(FieldState key) {
+        return statistic.get(key);
+    }
+
 }

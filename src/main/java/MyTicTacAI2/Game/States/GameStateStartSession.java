@@ -28,8 +28,10 @@ public class GameStateStartSession implements IGameState, IChangeListener {
     @Override
     public void enter() {
         if (board.areGamesOpen())
+        {
+            board.startSession();
             stateMaschine.setToState(GameState.WaitForPlayer);
-        else
+        }else
             board.addChangeListener(this);
     }
 

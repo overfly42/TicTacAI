@@ -23,9 +23,14 @@ public class GameStateMachine implements IGameStateMachine {
         // states.put(GameState.CheckField, new GameStateCheckField());
         // states.put(GameState.EndGame, new GameStateEndGame());
         // states.put(GameState.EndSession, new GameStateEndSession());
-        states.put(GameState.StartSession, new GameStateStartSession(this));
         states.put(GameState.Init, new GameStateInit(this));
+        states.put(GameState.StartSession, new GameStateStartSession(this));
         states.put(GameState.WaitForPlayer, new GameStateWaitForPlayer(this, queue));
+        states.put(GameState.StartGame, new GameStateStartGame(this, queue));
+        states.put(GameState.WaitForAction,new GameStateWaitForAction(this, queue));
+        states.put(GameState.CheckField, new GameStateCheckField(this));
+        states.put(GameState.EndGame, new GameStateEndGame(this, queue));
+        states.put(GameState.EndSession,new GameStateEndSession(this, queue));
         // states.put(GameState.StartGame, new GameStateStartGame());
         // states.put(GameState.WaitForAction, new GameStateWaitForAction());
 

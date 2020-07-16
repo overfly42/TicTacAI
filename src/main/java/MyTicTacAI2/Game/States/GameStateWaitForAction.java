@@ -1,12 +1,10 @@
 package MyTicTacAI2.Game.States;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 import MyTicTacAI2.Communication.Keys;
 import MyTicTacAI2.Communication.Message;
-import MyTicTacAI2.Communication.Translator;
 import MyTicTacAI2.Game.FieldState;
 import MyTicTacAI2.Game.GameBoard;
 import MyTicTacAI2.Game.GameState;

@@ -25,6 +25,12 @@ public class QueueInterface implements IComQueue {
     private Translator msgTranslator;
 
     public QueueInterface() {
+        this(true);
+    }
+
+    public QueueInterface(boolean actAsServer) {
+        String tx = actAsServer ? SEND_QUEUE_NAME : RECEIVE_QUEUE_NAME;
+        String rx = actAsServer ? RECEIVE_QUEUE_NAME : SEND_QUEUE_NAME;
         listener = new ArrayList<>();
         msgTranslator = new Translator();
         ConnectionFactory factory = new ConnectionFactory();
@@ -38,9 +44,9 @@ public class QueueInterface implements IComQueue {
             Connection con = factory.newConnection();
             rxChannel = con.createChannel();
             txChannel = con.createChannel();
-            rxChannel.queueDeclare(RECEIVE_QUEUE_NAME, false, false, false, null);
-            txChannel.queueDeclare(SEND_QUEUE_NAME, false, false, false, null);
-            rxChannel.basicConsume(RECEIVE_QUEUE_NAME, true, deliverCallback, consumerTag -> {
+            rxChannel.queueDeclare(rx, false, false, false, null);
+            txChannel.queueDeclare(tx, false, false, false, null);
+            rxChannel.basicConsume(rx, true, deliverCallback, consumerTag -> {
             });
         } catch (IOException e) {
             // TODO Auto-generated catch block

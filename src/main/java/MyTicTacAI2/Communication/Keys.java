@@ -1,5 +1,5 @@
 package MyTicTacAI2.Communication;
 
 public enum Keys {
-    ID, Reason,X,Y
+    ID, Reason,X,Y,PlayerA,PlayerB,Tie
 }
