@@ -16,7 +16,7 @@ public class GameStateWaitForPlayer implements IGameState, IChangeListener {
     GameBoard board;
     IComQueue com;
     IGameStateMachine stateMaschine;
-    private static final GameState NEXT_STATE = GameState.StartSession;
+    private static final GameState NEXT_STATE = GameState.StartGame;
 
     public GameStateWaitForPlayer(IGameStateMachine gameStateMaschine, IComQueue com) {
         this.com = com;
@@ -70,10 +70,15 @@ public class GameStateWaitForPlayer implements IGameState, IChangeListener {
         else
             try {
                 board.addPlayer(id);
+                acceptPlayer(content);
             } catch (Exception e) {
                 rejectPlayer(content);
             }
         switchToNextState();
+    }
+
+    private void acceptPlayer(Map<Keys, String> content) {
+        com.sendMessage(Message.RegisterSuccess,content);
     }
 
     private void rejectPlayer(Map<Keys, String> content) {

@@ -3,8 +3,10 @@ package MyTicTacAI2.Communication;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import com.rabbitmq.client.ConnectionFactory;
@@ -20,7 +22,9 @@ public class QueueInterface implements IComQueue {
     private final static String SEND_QUEUE_NAME = "fromServer";
     private Channel rxChannel;
     private Channel txChannel;
-    private List<IChangeListener> listener;
+    private String tx;
+    private String rx;
+    private Set<IChangeListener> listener;
 
     private Translator msgTranslator;
 
@@ -29,15 +33,20 @@ public class QueueInterface implements IComQueue {
     }
 
     public QueueInterface(boolean actAsServer) {
-        String tx = actAsServer ? SEND_QUEUE_NAME : RECEIVE_QUEUE_NAME;
-        String rx = actAsServer ? RECEIVE_QUEUE_NAME : SEND_QUEUE_NAME;
-        listener = new ArrayList<>();
+        tx = actAsServer ? SEND_QUEUE_NAME : RECEIVE_QUEUE_NAME;
+        rx = actAsServer ? RECEIVE_QUEUE_NAME : SEND_QUEUE_NAME;
+        listener = new HashSet<>();
         msgTranslator = new Translator();
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
-            processMassage(message);
+            System.out.println("New Message arrived: " + message);
+            (new Thread() {
+                public void run() {
+                    processMassage(message);
+                }
+            }).start();
         };
 
         try {
@@ -47,6 +56,7 @@ public class QueueInterface implements IComQueue {
             rxChannel.queueDeclare(rx, false, false, false, null);
             txChannel.queueDeclare(tx, false, false, false, null);
             rxChannel.basicConsume(rx, true, deliverCallback, consumerTag -> {
+                System.out.println("echo");
             });
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -79,18 +89,22 @@ public class QueueInterface implements IComQueue {
     @Override
     public void sendMessage(Message msg, Map<Keys, String> content) {
         try {
-            txChannel.basicPublish("", RECEIVE_QUEUE_NAME, null, msgTranslator.toQueue(msg, content).getBytes());
+            txChannel.basicPublish("", tx, null, msgTranslator.toQueue(msg, content).getBytes());
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
-    private void processMassage(String msg) {
+    private synchronized void processMassage(String msg) {
         Map<Keys, String> content = new HashMap<>();
         Message message = msgTranslator.fromQueue(msg, content);
         for (IChangeListener l : listener) {
-            l.update(message, content);
+            (new Thread(new Runnable() {
+                public void run() {
+                    l.update(message, content);
+                }
+            })).start();
         }
     }
 

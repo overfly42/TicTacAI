@@ -65,7 +65,7 @@ public class StateWaitForPlayerTest extends AbstractStateTest<GameStateWaitForPl
         assertNotNull(board.getPlayerB());
         assertEquals("P2", board.getPlayerB(), "Second player should be registerted");
         assertTrue(stateSwitchCalled);
-        assertEquals(GameState.StartSession, lastStateSwitchedTo,
+        assertEquals(GameState.StartGame, lastStateSwitchedTo,
                 "After player selection the wait for player state is over");
         
     }
@@ -82,7 +82,7 @@ public class StateWaitForPlayerTest extends AbstractStateTest<GameStateWaitForPl
         assertFalse(stateSwitchCalled);
         assertNull(lastStateSwitchedTo, "in rejection only mode the state should be changed");
 
-        String exprectedMessage = "P3:RegisterRejected";
+        String exprectedMessage = "RegisterRejected:P3";
         assertEquals(exprectedMessage, Translator.toQueue(lastMessage, content), "Message shold be as expected");
     }
 

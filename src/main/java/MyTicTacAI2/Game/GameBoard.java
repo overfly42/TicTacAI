@@ -2,8 +2,10 @@ package MyTicTacAI2.Game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import MyTicTacAI2.Interfaces.IChangeListener;
 import MyTicTacAI2.utils.FieldCalculator;
@@ -13,7 +15,7 @@ public class GameBoard {
     private static final int FIELD_SIZE = 3;
     private int maxGames;
     private int currentGame;
-    private List<IChangeListener> observer;
+    private Set<IChangeListener> observer;
     private String playerA;
     private String playerB;
     private FieldState[][] board;
@@ -23,10 +25,12 @@ public class GameBoard {
     private Map<FieldState, Integer> statistic;
 
     public GameBoard() {
+        observer = new HashSet<>();
         startSession();
         startPlayer = true;
         gameInProgress = false;
         statistic = new HashMap<>();
+
     }
 
     public int getMaxGames() {
@@ -63,7 +67,6 @@ public class GameBoard {
     public void startSession() {
         maxGames = 0;
         currentGame = 0;
-        observer = new ArrayList<>();
         playerA = null;
         playerB = null;
     }
@@ -81,8 +84,8 @@ public class GameBoard {
     }
 
     private void updateObserver() {
-        for (IChangeListener listner : observer) {
-            listner.update();
+            for (IChangeListener listner : observer) {
+                listner.update();
         }
     }
 

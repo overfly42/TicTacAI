@@ -83,6 +83,7 @@ public class PrimaryController implements Initializable {
         } else {
             stateMachine.getBoard().setMaxGames(NumberOfGames.getValue());
             stateMachine.startStateMaschine();
+
             backend.start();
         }
     }
