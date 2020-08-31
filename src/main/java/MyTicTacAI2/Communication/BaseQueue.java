@@ -1,0 +1,92 @@
+package MyTicTacAI2.Communication;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import com.rabbitmq.client.*;
+
+import MyTicTacAI2.Interfaces.IChangeListener;
+import MyTicTacAI2.Interfaces.IComQueue;
+
+public abstract class BaseQueue implements IComQueue {
+
+    public static final String EXCHANGE_NAME = "message_from_server";
+    public static final String BORADCAST_KEY = "all";
+    protected final String receivingQueue;
+    protected final String sendingExchangeName;
+    protected Channel txChannel;
+    protected Channel rxChannel;
+
+    private Set<IChangeListener> listener;
+
+    public BaseQueue(String QueueName, String sendingExchangeName) {
+        receivingQueue = QueueName;
+        this.sendingExchangeName = sendingExchangeName;
+        listener = new HashSet<>();
+        setupChannel();
+        try {
+            rxChannel.basicConsume(QueueName, true, deliverCallback, consumerTag -> {
+                System.out.println("echo");
+            });
+
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
+
+    }
+
+    protected abstract void setupChannel();
+
+    DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+        String message = new String(delivery.getBody(), "UTF-8");
+        System.out.println("New Message arrived: " + message);
+        (new Thread() {
+            public void run() {
+                processMassage(message);
+            }
+        }).start();
+    };
+
+    private synchronized void processMassage(String msg) {
+        Map<Keys, String> content = new HashMap<>();
+        Message message = Translator.fromQueue(msg, content);
+        for (IChangeListener l : listener) {
+            (new Thread(new Runnable() {
+                public void run() {
+                    l.update(message, content);
+                }
+            })).start();
+        }
+    }
+
+    @Override
+    public void addListener(IChangeListener listener) {
+        this.listener.add(listener);
+    }
+
+    @Override
+    public void removeListener(IChangeListener listener) {
+        this.listener.remove(listener);
+    }
+
+    @Override
+    public void sendMessage(Message msg) {
+
+    }
+
+    @Override
+    public void sendMessage(Message msg, Map<Keys, String> content) {
+        try {
+            txChannel.basicPublish(sendingExchangeName, content.get(Keys.ID), null,
+                    Translator.toQueue(msg, content).getBytes());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+}
