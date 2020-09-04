@@ -21,7 +21,9 @@ public class ServerQueue extends BaseQueue {
             txChannel.exchangeDeclare(EXCHANGE_NAME, "direct");
 
             rxChannel = connection.createChannel();
+            rxChannel.exchangeDeclare(receivingQueue, "fanout");
             rxChannel.queueDeclare(receivingQueue, false, false, false, null);
+            rxChannel.queueBind(receivingQueue, receivingQueue, "");
 
         } catch (Exception e) {
             // TODO: handle exception

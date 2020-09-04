@@ -73,6 +73,9 @@ public class GameStateWaitForAction implements IGameState, IChangeListener {
         // Happy Path
         if (board.getStateOfField(x, y) == FieldState.Empty && content.get(Keys.ID).equals(playerId)) {
             board.setTurn(content.get(Keys.ID), x, y);
+            content.put(Keys.Player, content.get(Keys.ID));
+            content.put(Keys.ID, "all");
+            com.sendMessage(Message.Set,content);
             board.switchActivePlayer();
             gameStateMachine.setToState(GameState.CheckField);
         }

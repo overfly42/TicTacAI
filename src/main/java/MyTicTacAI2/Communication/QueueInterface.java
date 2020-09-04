@@ -14,7 +14,7 @@ import com.rabbitmq.client.DeliverCallback;
 
 import MyTicTacAI2.Interfaces.IChangeListener;
 import MyTicTacAI2.Interfaces.IComQueue;
-
+@Deprecated
 public class QueueInterface implements IComQueue {
     private final static String RECEIVE_QUEUE_NAME = "toServer";
     private final static String SEND_QUEUE_NAME = "fromServer";

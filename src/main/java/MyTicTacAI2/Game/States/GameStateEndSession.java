@@ -34,10 +34,11 @@ public class GameStateEndSession implements IGameState {
     public void enter() {
         Map<Keys,String> content = new HashMap<>();
         content.put(Keys.PlayerA,""+board.getWins(FieldState.PlayerA));
-        content.put(Keys.PlayerB,""+board.getWins(FieldState.PlayerA));
+        content.put(Keys.PlayerB,""+board.getWins(FieldState.PlayerB));
         content.put(Keys.Tie,""+board.getWins(FieldState.Empty));
+        content.put(Keys.ID, "all");
         com.sendMessage(Message.EndSession,content);
-        gameStateMachine.setToState(GameState.Init);
+//        gameStateMachine.setToState(GameState.Init);
     }
 
 }

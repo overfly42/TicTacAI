@@ -1,6 +1,7 @@
 package MyTicTacAI2.Communication;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,11 +26,10 @@ public abstract class BaseQueue implements IComQueue {
     public BaseQueue(String QueueName, String sendingExchangeName) {
         receivingQueue = QueueName;
         this.sendingExchangeName = sendingExchangeName;
-        listener = new HashSet<>();
+        listener = Collections.synchronizedSet(new HashSet<>());
         setupChannel();
         try {
             rxChannel.basicConsume(QueueName, true, deliverCallback, consumerTag -> {
-                System.out.println("echo");
             });
 
         } catch (Exception e) {
@@ -53,28 +53,35 @@ public abstract class BaseQueue implements IComQueue {
     private synchronized void processMassage(String msg) {
         Map<Keys, String> content = new HashMap<>();
         Message message = Translator.fromQueue(msg, content);
-        for (IChangeListener l : listener) {
-            (new Thread(new Runnable() {
-                public void run() {
-                    l.update(message, content);
-                }
-            })).start();
+        synchronized (listener) {
+            for (IChangeListener l : listener) {
+                (new Thread(new Runnable() {
+                    public void run() {
+                        l.update(message, content);
+                    }
+                })).start();
+            }
         }
     }
 
     @Override
     public void addListener(IChangeListener listener) {
-        this.listener.add(listener);
+        synchronized (listener) {
+            this.listener.add(listener);
+        }
     }
 
     @Override
     public void removeListener(IChangeListener listener) {
+        synchronized(listener){
         this.listener.remove(listener);
-    }
+    }}
 
     @Override
     public void sendMessage(Message msg) {
-
+        Map<Keys, String> content = new HashMap<>();
+        content.put(Keys.ID, "all");
+        sendMessage(msg, content);
     }
 
     @Override

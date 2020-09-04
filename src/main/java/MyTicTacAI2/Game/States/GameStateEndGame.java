@@ -44,6 +44,7 @@ public class GameStateEndGame implements IGameState {
         }
         Map<Keys, String> content = new HashMap<>();
         content.put(key, text);
+        content.put(Keys.ID, "all");
         com.sendMessage(Message.EndGame, content);
         board.endGame();
         gameStateMaschine.setToState(board.areGamesOpen() ? GameState.StartGame : GameState.EndSession);

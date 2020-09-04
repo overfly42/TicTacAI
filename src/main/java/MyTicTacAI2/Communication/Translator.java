@@ -17,6 +17,7 @@ public class Translator {
             case SetRejected:
             case EndGame:
             case RegisterOpen:
+            case EndSession:
                 result = msg.toString() + convertMapToString(content);
                 break;
             // case RegisterOpen:

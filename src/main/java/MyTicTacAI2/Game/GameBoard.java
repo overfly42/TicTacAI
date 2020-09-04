@@ -26,10 +26,10 @@ public class GameBoard {
 
     public GameBoard() {
         observer = new HashSet<>();
+        statistic = new HashMap<>();
         startSession();
         startPlayer = true;
         gameInProgress = false;
-        statistic = new HashMap<>();
 
     }
 
@@ -51,10 +51,6 @@ public class GameBoard {
         for (int i = 0; i < FIELD_SIZE; i++)
             for (int j = 0; j < FIELD_SIZE; j++)
                 board[i][j] = FieldState.Empty;
-        statistic.clear();
-        statistic.put(FieldState.Empty, 0);
-        statistic.put(FieldState.PlayerA, 0);
-        statistic.put(FieldState.PlayerB, 0);
         gameInProgress = true;
     }
 
@@ -65,10 +61,14 @@ public class GameBoard {
     }
 
     public void startSession() {
-        maxGames = 0;
+        // maxGames = 0;
         currentGame = 0;
         playerA = null;
         playerB = null;
+        statistic.clear();
+        statistic.put(FieldState.Empty, 0);
+        statistic.put(FieldState.PlayerA, 0);
+        statistic.put(FieldState.PlayerB, 0);
     }
 
     public boolean areGamesOpen() {
