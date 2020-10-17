@@ -50,7 +50,7 @@ public abstract class BaseQueue implements IComQueue {
         }).start();
     };
 
-    private synchronized void processMassage(String msg) {
+    protected synchronized void processMassage(String msg) {
         Map<Keys, String> content = new HashMap<>();
         Message message = Translator.fromQueue(msg, content);
         synchronized (listener) {

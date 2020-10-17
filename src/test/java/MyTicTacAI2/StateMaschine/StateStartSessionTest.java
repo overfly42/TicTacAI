@@ -32,7 +32,7 @@ public class StateStartSessionTest extends AbstractStateTest<GameStateStartSessi
     @Test
     public void testUpdate()
     {
-         testObject = new GameStateStartSession(this);
+        testObject = new GameStateStartSession(this);
         assertFalse(board.areGamesOpen());
         testObject.enter();
         assertNull(lastStateSwitchedTo, "As there is no Number of Games prepaired the ready state should not be leaved");

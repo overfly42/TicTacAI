@@ -1,21 +1,17 @@
-package MyTicTacAI2.UI;
+package MyTicTacAI2.Player;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import MyTicTacAI2.Communication.ClientQueue;
 import MyTicTacAI2.Communication.Keys;
 import MyTicTacAI2.Communication.Message;
-import MyTicTacAI2.Interfaces.IChangeListener;
-import MyTicTacAI2.Interfaces.IComQueue;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 
-public class HumanPlayer implements IChangeListener {
+public class HumanPlayer extends Player {
 
-    IComQueue com;
     List<SimpleStringProperty> field;
     SimpleStringProperty player;
     Function<String, String> messagePathToUser;
@@ -27,21 +23,14 @@ public class HumanPlayer implements IChangeListener {
         player = playerProperty;
         messagePathToUser = textAppender;
         hasTurn = false;
+        isActive = false;
     }
 
-    public void stop() {
-        // if (com != null)
-        //     com.removeListener(this);
-        // com = null;
-    }
 
+
+    @Override
     public void start() {
-        if (com != null)
-            com.addListener(this);
-        else {
-            com = new ClientQueue(player.get(), "server_in");
-            com.addListener(this);
-        }
+        start(player.getValue());
     }
 
     @Override
@@ -56,6 +45,8 @@ public class HumanPlayer implements IChangeListener {
 
     @Override
     public void update(Message msg, Map<Keys, String> content) {
+        if (!isActive) // Nothing to do
+            return;
         System.out.println(String.format("Update for %s: %s", player.get(), msg));
         for (Keys k : content.keySet())
             System.out.println("\t" + k.toString() + "\t= " + content.get(k));
@@ -96,6 +87,7 @@ public class HumanPlayer implements IChangeListener {
 
     private void endGame() {
         messagePathToUser.apply("Game Ended\n");
+        hasTurn=false;
         Platform.runLater(() -> {
             for (SimpleStringProperty tile : field) {
                 tile.set("");
@@ -149,6 +141,11 @@ public class HumanPlayer implements IChangeListener {
         content.put(Keys.X, Integer.toString(x));
         content.put(Keys.Y, Integer.toString(y));
         com.sendMessage(Message.Set, content);
+    }
+
+    @Override
+    public String toString() {
+        return "HumanPlayer";
     }
 
 }

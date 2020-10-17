@@ -1,8 +1,7 @@
 package MyTicTacAI2.Communication;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 
 public class ServerQueue extends BaseQueue {
 
@@ -30,4 +29,5 @@ public class ServerQueue extends BaseQueue {
         }
 
     }
+
 }

@@ -82,7 +82,7 @@ public class StateWaitForPlayerTest extends AbstractStateTest<GameStateWaitForPl
         assertFalse(stateSwitchCalled);
         assertNull(lastStateSwitchedTo, "in rejection only mode the state should be changed");
 
-        String exprectedMessage = "RegisterRejected:P3";
+        String exprectedMessage = "RegisterRejected:ID=P3";
         assertEquals(exprectedMessage, Translator.toQueue(lastMessage, content), "Message shold be as expected");
     }
 

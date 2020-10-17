@@ -9,11 +9,16 @@ import java.util.function.Function;
 import MyTicTacAI2.Communication.ServerQueue;
 import MyTicTacAI2.Game.GameStateMachine;
 import MyTicTacAI2.Interfaces.IComQueue;
+import MyTicTacAI2.Player.HumanPlayer;
+import MyTicTacAI2.Player.Player;
+import MyTicTacAI2.Player.RuleBasedAI;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
@@ -55,6 +60,10 @@ public class PrimaryController implements Initializable {
     private Label currentPlayer;
     @FXML
     private TextArea history;
+    @FXML
+    private ComboBox<Player> playerTypeA;
+    @FXML
+    private ComboBox<Player> playerTypeB;
     private boolean running;
     private List<SimpleStringProperty> fieldView;
     private SimpleStringProperty playerAProperty;
@@ -64,8 +73,8 @@ public class PrimaryController implements Initializable {
     private GameStateMachine stateMachine;
     private IComQueue queue;
 
-    private HumanPlayer backendP1;
-    private HumanPlayer backendP2;
+    private Player backendP1;
+    private Player backendP2;
 
     public PrimaryController() {
         running = false;
@@ -77,12 +86,6 @@ public class PrimaryController implements Initializable {
         currentProperty = new SimpleStringProperty();
         queue = new ServerQueue("server_in");
         stateMachine = new GameStateMachine(queue);
-        Function<String, String> textAppender = e -> {
-            history.appendText(e);
-            return e;
-        };
-        backendP1 = new HumanPlayer(fieldView, playerAProperty, textAppender);
-        backendP2 = new HumanPlayer(fieldView, playerBProperty, textAppender);
 
     }
 
@@ -94,14 +97,14 @@ public class PrimaryController implements Initializable {
             stateMachine.stopStateMaschine();
             backendP1.stop();
             backendP2.stop();
-            for(SimpleStringProperty text : fieldView)
-            text.set("");
+            for (SimpleStringProperty text : fieldView)
+                text.set("");
             history.textProperty().set("");
         } else {
-            stateMachine.getBoard().setMaxGames(NumberOfGames.getValue());
-            stateMachine.startStateMaschine();
             backendP1.start();
             backendP2.start();
+            stateMachine.getBoard().setMaxGames(NumberOfGames.getValue());
+            stateMachine.startStateMaschine();
 
         }
     }
@@ -125,7 +128,34 @@ public class PrimaryController implements Initializable {
         history.textProperty().addListener((obs, oldVal, newVal) -> {
             history.setScrollTop(Double.MAX_VALUE);
         });
+        initPlayerTypes();
 
+    }
+
+    private void initPlayerTypes() {
+        Function<String, String> textAppender = e -> {
+            history.appendText(e);
+            return e;
+        };
+        backendP1 = new HumanPlayer(fieldView, playerAProperty, textAppender);
+        backendP2 = new HumanPlayer(fieldView, playerBProperty, textAppender);
+
+        initSingleComboBox(playerTypeA, backendP1, "A", (var x) -> {
+            backendP1 = playerTypeA.getValue();
+        });
+
+        initSingleComboBox(playerTypeB, backendP2, "B", (var x) -> {
+            backendP1 = playerTypeB.getValue();
+        });
+    }
+
+    private void initSingleComboBox(ComboBox<Player> boxToFill, Player p, String id,
+            EventHandler<ActionEvent> eventHandler) {
+        boxToFill.getItems().add(p);
+        boxToFill.getItems().add(new RuleBasedAI(id));
+
+        boxToFill.setValue(boxToFill.getItems().get(0));
+        boxToFill.setOnAction(eventHandler);
     }
 
     private void initGameField() {

@@ -39,7 +39,7 @@ public class StateStartGameTest extends AbstractStateTest<GameStateStartGame> {
     @Test
     public void testPlayerOneReady() {
         testEnter();
-        String message = "PlayerReady:P1";
+        String message = "PlayerReady:ID=P1";
         Map<Keys, String> content = new HashMap<>();
         Message msg = Translator.fromQueue(message, content);
         testObject.update(msg, content);
@@ -48,7 +48,7 @@ public class StateStartGameTest extends AbstractStateTest<GameStateStartGame> {
     @Test
     public void testPlayerTwoReady(){
         testPlayerOneReady();
-        String message = "PlayerReady:P2";
+        String message = "PlayerReady:ID=P2";
         Map<Keys, String> content = new HashMap<>();
         Message msg = Translator.fromQueue(message, content);
         testObject.update(msg, content);
