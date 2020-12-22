@@ -26,8 +26,6 @@ public class HumanPlayer extends Player {
         isActive = false;
     }
 
-
-
     @Override
     public void start() {
         start(player.getValue());
@@ -87,7 +85,7 @@ public class HumanPlayer extends Player {
 
     private void endGame() {
         messagePathToUser.apply("Game Ended\n");
-        hasTurn=false;
+        hasTurn = false;
         Platform.runLater(() -> {
             for (SimpleStringProperty tile : field) {
                 tile.set("");
@@ -119,17 +117,6 @@ public class HumanPlayer extends Player {
         sendBasicMessage(Message.PlayerReady);
     }
 
-    private void registratonOpen() {
-        sendBasicMessage(Message.Register);
-    }
-
-    private void sendBasicMessage(Message msg) {
-        Map<Keys, String> content = new HashMap<>();
-        content.put(Keys.ID, player.get());
-        com.sendMessage(msg, content);
-
-    }
-
     public boolean hasTurn() {
         return hasTurn;
     }
@@ -148,4 +135,8 @@ public class HumanPlayer extends Player {
         return "HumanPlayer";
     }
 
+    @Override
+    protected String getId() {
+        return player.get();
+    }
 }

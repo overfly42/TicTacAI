@@ -30,11 +30,19 @@ public class RuleBasedAI extends Player {
     public void update(Message msg, Map<Keys, String> content) {
         if (!isActive)
             return;
-        System.out.println("Recevied message:+" + msg);
+        System.out.println("(AI) Recevied message: " + msg);
         for (Keys k : content.keySet())
             System.out.println("\t" + k + ":\t" + content.get(k));
-
-    }
+        switch (msg) {
+            case RegisterOpen:
+                registratonOpen();
+                break;
+            default:
+                System.out.println("Recevied not implemented message: " + msg);
+                for (Keys k : content.keySet())
+                    System.out.println("\t" + k + ":\t" + content.get(k));
+        }
+            }
 
     @Override
     public void start() {
@@ -45,7 +53,7 @@ public class RuleBasedAI extends Player {
     @Override
     public void stop() {
         System.out.println("Stopping Simple AI");
-super.stop();
+        super.stop();
     }
 
     @Override
@@ -59,9 +67,14 @@ super.stop();
         // TODO Auto-generated method stub
 
     }
-@Override
-public String toString()
-{
-    return gameID;
-}
+
+    @Override
+    public String toString() {
+        return gameID;
+    }
+
+    @Override
+    protected String getId() {
+        return gameID;
+    }
 }

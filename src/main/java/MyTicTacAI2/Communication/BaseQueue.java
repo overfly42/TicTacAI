@@ -66,6 +66,7 @@ public abstract class BaseQueue implements IComQueue {
 
     @Override
     public void addListener(IChangeListener listener) {
+        System.out.println("Added Listener for: " + listener.toString());
         synchronized (listener) {
             this.listener.add(listener);
         }
@@ -73,9 +74,10 @@ public abstract class BaseQueue implements IComQueue {
 
     @Override
     public void removeListener(IChangeListener listener) {
-        synchronized(listener){
-        this.listener.remove(listener);
-    }}
+        synchronized (listener) {
+            this.listener.remove(listener);
+        }
+    }
 
     @Override
     public void sendMessage(Message msg) {
