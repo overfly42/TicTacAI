@@ -3,6 +3,7 @@ package MyTicTacAI2.Player;
 import java.util.Map;
 import MyTicTacAI2.Communication.Keys;
 import MyTicTacAI2.Communication.Message;
+import MyTicTacAI2.Game.GameState;
 
 public class RuleBasedAI extends Player {
 
@@ -37,12 +38,17 @@ public class RuleBasedAI extends Player {
             case RegisterOpen:
                 registratonOpen();
                 break;
+            case RegisterSuccess:
+                System.out.println("Information only: " + msg.name());
+                break;
+            case StartGame:
+                sendBasicMessage(Message.PlayerReady);
             default:
                 System.out.println("Recevied not implemented message: " + msg);
                 for (Keys k : content.keySet())
                     System.out.println("\t" + k + ":\t" + content.get(k));
         }
-            }
+    }
 
     @Override
     public void start() {

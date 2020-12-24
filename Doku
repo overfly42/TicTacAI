@@ -60,6 +60,8 @@ For testing purposes losing the coupling
 06 Client 2:Register: ID2
 07 Server:ID: Registration success
 08 Server: @all:Start Game
+Client 1: PlayerReady
+Client 2: PlayerReady
 09 Server: ID1: your turn:
 10 Client 1: Set:X:Y
 11 Server (move OK): @all:set:ID1:X:Y

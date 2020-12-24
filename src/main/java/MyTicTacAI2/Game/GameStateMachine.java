@@ -39,6 +39,7 @@ public class GameStateMachine implements IGameStateMachine {
 
     @Override
     public void setToState(final GameState next) {
+        System.out.println("Switchting from " + currentState.toString() +"to State: " + next.name());
         if (currentState != null)
             currentState.leave();
         currentState = states.get(next);

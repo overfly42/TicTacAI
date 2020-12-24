@@ -1,2 +1,82 @@
 # TicTacAI
 Tic Tac Toe with some AI Stuff
+
+=Requirements=
+1) Execution only on local system
+2) Different Types of opponents
+2.a) Human vs. Human
+2.b) Human vs. AI
+2.c) AI vs. AI
+3) Different Types of AI
+3.a) Rule Based AI
+3.b) Reinforcement Learning AI
+3.b.I) 9 Inputs with -1 0 and 1
+3.b.II) 27 Inputs
+3.c) Full Supervised AI
+4) Statistics
+5) Training of AI
+6) Storage and Reload functions of trained AI and Statistics (for continues Training)
+=Design=
+@Obsolete as the design switched to Rabbit MQ
+The Design should handle the different requirements. For this the requirements have to split the software into sepate modules:
+1) The Game with the game logic and an entry point for player types
+1.1) There should be a view to the game board and statistics
+1.2) The Rules should be managed by the game
+1.3) For the Training there should be a possibility to start a number of sequential games
+1.4) every participant of a game should get the information in the same way (you/free/opponent)
+2) The Player should be connected via an interface to the game
+2.1) The implementation of the player should offer all possibilities to use this interface (GPU Access vor KI / GUI for Human)
+2.2) The Interface Implementation should not be connected to the game other than the interface
+2.3) It shouldn't matter witch symbol is assigned to an implementation
+=Implementation=
+==Rulesets==
+All Rules and Calculations are implementet as static methods in FieldCalculator
+The value of an field is calculated as follows
+1) sum score of every line (horizontal, vertical, diagonal)
+2) within a line 
+2.1) own symbol counts 1
+2.2) opponent symbol counts -1
+2.3) free symbol counts 0
+2.4) opponent has max line count -1, this line value is doubled
+2.5) own number of symbols are max line count, this line value is squared
+==Interfaces==
+There are two main interfaces. The Observer, and the Player. The Player extends the Observer.
+An Observer could be an GUI for viewing a game, or write a statistic, while the player could be an GUI for humans or an AI with or without NN
+===Observer===
+Has to do the following
+1) Start a new Game
+2) Update the field
+3) introduce player IDs
+===Player extends Observer===
+1) iniialize an action (take the next move), asynchron (for Human or NN)
+2) Introduce an observer, the game comtroller
+===Game Controller===
+For testing purposes losing the coupling
+1) get the action from the player
+==Communication==
+00 Server: StartSession
+01 Server:Registration open
+02 Client 1:Register: ID1
+03 Server:ID: Registration success
+04 Client 2:Register: ID1
+05 Server:ID:Registration Rejected
+06 Client 2:Register: ID2
+07 Server:ID: Registration success
+08 Server: @all:Start Game
+Client 1: PlayerReady
+Client 2: PlayerReady
+09 Server: ID1: your turn:
+10 Client 1: Set:X:Y
+11 Server (move OK): @all:set:ID1:X:Y
+12 Server (move NOK): ID1:Move Rejected
+13 |-> Back to 10
+14 Server: ID2: your turn
+15 Client 2: Set:X:Y
+16 Server (move OK): @all:set:ID2:X:Y
+17 Server (move NOK): ID2:Move Rejected
+18 |-> Back to 15
+19 Server (Game ended) @all:game Done:ID1/ID2/Tie
+20 Server (Session ended) @all:statistics:ID1=N;ID2=M;Tie=K (with N wins of ID1, M wins of ID2 and K ties)
+21 Server (Game Continue)-> 10
+
+
