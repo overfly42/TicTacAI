@@ -58,10 +58,10 @@ public class FieldCalculator {
         for (int i = 0; i < max; i++)
             if (line[i] != FieldState.Empty)
                 value += line[i] == type ? 1 : -1;
-        if (max == value)
-            value = max * max;
-        else if (-max + 1 == value)
-            value += value;
+         if (max == value)
+             value = max * max;
+         else if (-max + 1 == value)
+             value += value;
         return value;
     }
 
