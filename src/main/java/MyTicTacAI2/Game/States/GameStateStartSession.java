@@ -18,6 +18,7 @@ public class GameStateStartSession implements IGameState, IChangeListener {
     public GameStateStartSession(IGameStateMachine gameStateMaschine) {
         stateMaschine = gameStateMaschine;
         board = stateMaschine.getBoard();
+        
         board.addChangeListener(this);
     }
 

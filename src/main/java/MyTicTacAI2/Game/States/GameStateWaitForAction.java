@@ -80,10 +80,17 @@ public class GameStateWaitForAction implements IGameState, IChangeListener {
             gameStateMachine.setToState(GameState.CheckField);
         }
         // Error Path
-        else {
+        else if( content.get(Keys.ID).equals(playerId)){
             Message returnMessage = Message.SetRejected;
             content.put(Keys.Reason, "Field not empty");
             com.sendMessage(returnMessage, content);
+        }
+        else
+        {
+            Message returnMessage = Message.SetRejected;
+            content.put(Keys.Reason, "Not your turn");
+            com.sendMessage(returnMessage, content);
+            
         }
     }
 

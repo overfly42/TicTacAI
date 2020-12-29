@@ -2,6 +2,7 @@ package MyTicTacAI2.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,13 +56,24 @@ public class FieldCalculator {
     private static int calculateLineValue(FieldState[] line, FieldState type) {
         int value = 0;
         int max = line.length;
-        for (int i = 0; i < max; i++)
-            if (line[i] != FieldState.Empty)
-                value += line[i] == type ? 1 : -1;
-         if (max == value)
-             value = max * max;
-         else if (-max + 1 == value)
-             value += value;
+        var list = Arrays.asList(line);
+        // Lines that do not contain any empty field, or all the same can be countet as
+        // zero
+        if (list.contains(FieldState.Empty)) {
+            for (int i = 0; i < max; i++) {
+                if (line[i] != FieldState.Empty)
+                    value += line[i] == type ? 1 : -1;
+            }
+            if (value == -max + 1)
+                value *= max;
+        } else {
+            value = max * max;
+            var typeOccourence = Collections.frequency(list, type);
+            if (typeOccourence == 0)
+                value *= -1;
+            else if (typeOccourence < max)
+                value = 0;// line is save, but can not change anything
+        }
         return value;
     }
 
