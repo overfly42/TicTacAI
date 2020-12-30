@@ -42,7 +42,7 @@ public abstract class BaseQueue implements IComQueue {
 
     DeliverCallback deliverCallback = (consumerTag, delivery) -> {
         String message = new String(delivery.getBody(), "UTF-8");
-        System.out.println("New Message arrived: " + message);
+        System.out.println("New Message arrived in ("+delivery.getEnvelope().getExchange()+"):"+ message);
         (new Thread() {
             public void run() {
                 processMassage(message);

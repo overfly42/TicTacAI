@@ -1,18 +1,15 @@
 package MyTicTacAI2.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-
 import MyTicTacAI2.Communication.Keys;
 import MyTicTacAI2.Communication.Message;
 import MyTicTacAI2.Game.FieldState;
-import MyTicTacAI2.Game.GameState;
 import MyTicTacAI2.utils.FieldCalculator;
 
 public class RuleBasedAI extends Player {
@@ -27,15 +24,40 @@ public class RuleBasedAI extends Player {
     public RuleBasedAI(String id) {
         isActive = false;
         gameID = BASE_ID + "_" + id;
-        resetField();
+        resetField(false);
         random = new Random();
         LastMessage = Message.StartGame;
     }
 
-    private void resetField() {
-        for (int i = 0; i < FIELD_SIZE; i++)
-            for (int n = 0; n < FIELD_SIZE; n++)
+    private synchronized void resetField() {
+        resetField(true);
+    }
+
+    private synchronized void resetField(boolean output) {
+        for (int i = 0; i < FIELD_SIZE; i++) {
+            if (output)
+                System.out.print(gameID + "\t");
+            for (int n = 0; n < FIELD_SIZE; n++) {
+                if (output) {
+
+                    String fieldValue = " ";
+                    switch (internalRepresentation[i][n]) {
+                        case Empty:
+                            fieldValue = "-";
+                            break;
+                        case PlayerA:
+                            fieldValue = "x";
+                            break;
+                        case PlayerB:
+                            fieldValue = "o";
+                            break;
+                    }
+                    System.out.print(fieldValue + "\t");
+                }
                 internalRepresentation[i][n] = FieldState.Empty;
+            }
+            System.out.println();
+        }
 
     }
 
@@ -84,7 +106,7 @@ public class RuleBasedAI extends Player {
                 if (content.get(Keys.Reason).equals("Field not empty"))
                     turn();
                 else
-                    System.out.println("Sorry not my Turn");
+                    System.out.println("(" + gameID + ") Sorry not my Turn");
                 break;
             default:
                 System.out.println("Recevied not implemented message: " + msg);
@@ -131,7 +153,10 @@ public class RuleBasedAI extends Player {
         System.out.println(String.format("Own: %d and oponent: %d", myValue, opValue));
         for (int[] element : possibleMoves)
             System.out.println(String.format("X=%d Y=%d my=%d; op=%d", element[0], element[1], element[2], element[3]));
-
+        if (possibleMoves.isEmpty()) {
+            System.out.println("NO More moves possible...");
+            return;
+        }
         int selectionMode = 2;
         int[] choise = new int[5];
         if (selectionMode == 1) {

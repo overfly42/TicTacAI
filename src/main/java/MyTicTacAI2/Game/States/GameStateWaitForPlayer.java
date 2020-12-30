@@ -20,7 +20,6 @@ public class GameStateWaitForPlayer implements IGameState, IChangeListener {
 
     public GameStateWaitForPlayer(IGameStateMachine gameStateMaschine, IComQueue com) {
         this.com = com;
-        this.com.addListener(this);
         stateMaschine = gameStateMaschine;
         board = stateMaschine.getBoard();
     }
@@ -28,11 +27,12 @@ public class GameStateWaitForPlayer implements IGameState, IChangeListener {
     @Override
     public void leave() {
         // TODO Auto-generated method stub
-
+        this.com.removeListener(this);
     }
 
     @Override
     public void enter() {
+        this.com.addListener(this);
         switch (board.getNumberOfPlayer()) {
             case 0:
                 com.sendMessage(Message.RegisterOpen);

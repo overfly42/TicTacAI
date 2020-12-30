@@ -145,7 +145,7 @@ public class PrimaryController implements Initializable {
         });
 
         initSingleComboBox(playerTypeB, backendP2, "B", (var x) -> {
-            backendP1 = playerTypeB.getValue();
+            backendP2 = playerTypeB.getValue();
         });
     }
 
