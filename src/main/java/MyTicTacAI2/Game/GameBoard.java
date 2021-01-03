@@ -84,17 +84,19 @@ public class GameBoard {
     }
 
     private void updateObserver() {
-            for (IChangeListener listner : observer) {
-                listner.update();
+        for (IChangeListener listner : observer) {
+            listner.update();
         }
     }
 
-    public void addPlayer(String name) throws Exception {
-        if (playerA == null)
+    public String addPlayer(String name) throws Exception {
+        if (playerA == null) {
             playerA = name;
-        else if (playerB == null)
+            return "playerA";
+        } else if (playerB == null) {
             playerB = name;
-        else
+            return "playerB";
+        } else
             throw new Exception("Both players are already registered");
     }
 

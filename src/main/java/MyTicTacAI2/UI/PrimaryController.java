@@ -10,6 +10,7 @@ import MyTicTacAI2.Communication.ServerQueue;
 import MyTicTacAI2.Game.GameStateMachine;
 import MyTicTacAI2.Interfaces.IComQueue;
 import MyTicTacAI2.Player.HumanPlayer;
+import MyTicTacAI2.Player.NonePlayer;
 import MyTicTacAI2.Player.Player;
 import MyTicTacAI2.Player.RuleBasedAI;
 import javafx.beans.property.SimpleStringProperty;
@@ -153,6 +154,7 @@ public class PrimaryController implements Initializable {
             EventHandler<ActionEvent> eventHandler) {
         boxToFill.getItems().add(p);
         boxToFill.getItems().add(new RuleBasedAI(id));
+        boxToFill.getItems().add(new NonePlayer());
 
         boxToFill.setValue(boxToFill.getItems().get(0));
         boxToFill.setOnAction(eventHandler);

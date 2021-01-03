@@ -69,6 +69,7 @@ public class HumanPlayer extends Player {
                 break;
             case RegisterSuccess:
                 System.out.println(String.format("Message %s arrived, information only", msg.toString()));
+                messagePathToUser.apply(String.format("Player ID for %s is %s\n", player.get(),content.get(Keys.Player)));
                 break;
             case PlayerReady:
             case Register:

@@ -89,8 +89,10 @@ public abstract class BaseQueue implements IComQueue {
     @Override
     public void sendMessage(Message msg, Map<Keys, String> content) {
         try {
+            String toSend = Translator.toQueue(msg, content);
             txChannel.basicPublish(sendingExchangeName, content.get(Keys.ID), null,
-                    Translator.toQueue(msg, content).getBytes());
+                    toSend.getBytes());
+            System.out.println(String.format("Sended message: %s to exchange %s with key %s",toSend,sendingExchangeName,content.get(Keys.ID)));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

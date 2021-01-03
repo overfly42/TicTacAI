@@ -57,7 +57,7 @@ For testing purposes losing the coupling
 00 Server: StartSession
 01 Server:Registration open
 02 Client 1:Register: ID1
-03 Server:ID: Registration success
+03 Server:ID: Registration success with internal PlayerID playerA or playerB
 04 Client 2:Register: ID1
 05 Server:ID:Registration Rejected
 06 Client 2:Register: ID2

@@ -69,7 +69,8 @@ public class GameStateWaitForPlayer implements IGameState, IChangeListener {
             rejectPlayer(content);
         else
             try {
-                board.addPlayer(id);
+                String internalID = board.addPlayer(id);
+                content.put(Keys.Player, internalID);
                 acceptPlayer(content);
             } catch (Exception e) {
                 rejectPlayer(content);
