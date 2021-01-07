@@ -120,7 +120,7 @@ public class PrimaryController implements Initializable {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
 
-        IntegerSpinnerValueFactory spinnerInit = new IntegerSpinnerValueFactory(1, 100, 1);
+        IntegerSpinnerValueFactory spinnerInit = new IntegerSpinnerValueFactory(1, 10000, 1);
         NumberOfGames.setValueFactory(spinnerInit);
         initGameField();
         playerAName.textProperty().bindBidirectional(playerAProperty);

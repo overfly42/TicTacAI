@@ -32,21 +32,24 @@ public class GameStateEndGame implements IGameState {
 
     @Override
     public void enter() {
-        var winner = FieldCalculator.getWinner(board.getFieldCopy());
-        Keys key;
-        String text;
-        if (winner == FieldState.Empty) {
-            key = Keys.Reason;
-            text = "TIE";
-        } else {
-            key = Keys.ID;
-            text = winner == FieldState.PlayerA ? board.getPlayerA() : board.getPlayerB();
-        }
+        // var winner = FieldCalculator.getWinner(board.getFieldCopy());
+        // Keys key;
+        // String text;
+        // if (winner == FieldState.Empty) {
+        //     key = Keys.Reason;
+        //     text = "TIE";
+        // } else {
+        //     key = Keys.ID;
+        //     text = winner == FieldState.PlayerA ? board.getPlayerA() : board.getPlayerB();
+        // }
         Map<Keys, String> content = new HashMap<>();
-        content.put(key, text);
+        // content.put(key, text);
         content.put(Keys.ID, "all");
-        com.sendMessage(Message.EndGame, content);
         board.endGame();
+        content.put(Keys.PlayerA,""+board.getWins(FieldState.PlayerA));
+        content.put(Keys.PlayerB,""+board.getWins(FieldState.PlayerB));
+        content.put(Keys.Tie,""+board.getWins(FieldState.Empty));
+        com.sendMessage(Message.EndGame, content);
         gameStateMaschine.setToState(board.areGamesOpen() ? GameState.StartGame : GameState.EndSession);
     }
 

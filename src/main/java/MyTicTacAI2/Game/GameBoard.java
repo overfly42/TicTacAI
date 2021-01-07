@@ -92,10 +92,10 @@ public class GameBoard {
     public String addPlayer(String name) throws Exception {
         if (playerA == null) {
             playerA = name;
-            return "playerA";
+            return "PlayerA";
         } else if (playerB == null) {
             playerB = name;
-            return "playerB";
+            return "PlayerB";
         } else
             throw new Exception("Both players are already registered");
     }
