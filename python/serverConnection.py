@@ -12,6 +12,7 @@ from functools import reduce
 from copy import deepcopy
 from matplotlib import pyplot as plt    
 from matplotlib import style    
+from threading import Thread
 
 def log(msg):
     print(msg)
@@ -71,19 +72,21 @@ class ai:
     def Inteligent(self)->str:
         moves = self.getPossibleMoves()
         value = float("-inf")
-        bestMoveX = list(moves.keys())[0]
-        bestMoveY = list(moves[bestMoveX].keys())[0]
-        log("Initial move is x={} and y={}".format(bestMoveX,bestMoveY))
-        for x in moves.keys():
-            for y in moves[x].keys():
-                field = deepcopy(self.field)
-                field[x][y] = self.name
-                hash = self.hash(field)
-                valueTemp = self.states.get(hash) if self.states.get(hash) else 0
-                if valueTemp > value:
-                    value = valueTemp
-                    bestMoveX=x
-                    bestMoveY=y
+        bestMoveX = random.choice(list(moves.keys()))
+        bestMoveY = random.choice(list(moves[bestMoveX].keys()))
+        doInteligent = random.uniform(0,1) > self.randomChoise
+        log("Initial move is x={} and y={} and will do inteligent? {}".format(bestMoveX,bestMoveY,doInteligent))
+        if doInteligent:
+            for x in moves.keys():
+                for y in moves[x].keys():
+                    field = deepcopy(self.field)
+                    field[x][y] = self.name
+                    hash = self.hash(field)
+                    valueTemp = self.states.get(hash) if self.states.get(hash) else 0
+                    if valueTemp > value:
+                        value = valueTemp
+                        bestMoveX=x
+                        bestMoveY=y
         log("Result  move is x={} and y={}".format(bestMoveX,bestMoveY))
         #Remember choosen board
         field = deepcopy(self.field)
@@ -112,7 +115,8 @@ class ai:
             if not turn in self.states.keys():
                 self.states[turn] = 0
             self.states[turn] += self.learningRate*(self.decay*rewardValue-self.states[turn])    
-            rewardValue = self.states[turn]        
+            rewardValue = self.states[turn]   
+        self.randomChoise-=self.randomDecrease     
         pass
     def EndSession(self,content):
         log("Training Done")
@@ -174,14 +178,13 @@ class ai:
         
         #elements = set((list(x.values() for x in field.values())))
         #print(elements)
-    def __init__(self):
-        QUEUE_NAME="NN_AI"
-        self.name = "AI_01"
+    def __init__(self, name = "AI_01"):
+        self.name = name
         self.field={'0':{'0':"-"}, '1':{'0':"-"}}
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         self.rxChannel = connection.channel()
         self.txChannel = connection.channel()
-        result = self.rxChannel.queue_declare(queue=QUEUE_NAME, exclusive=False)
+        result = self.rxChannel.queue_declare(queue=self.name, exclusive=False)
         queue_name = result.method.queue
 
         self.rxChannel.queue_bind(exchange='message_from_server', queue=queue_name,routing_key='all')
@@ -199,6 +202,8 @@ class ai:
         self.rewardWin = 1
         self.rewardLose = -1
         self.decay=0.8
+        self.randomChoise = 0.2
+        self.randomDecrease = 0.001
 
         self.rxChannel.start_consuming()
 #connection.close()
@@ -219,7 +224,14 @@ if __name__ == "__main__":
     #fig = plt.figure()    
       
     #plt.show()  
-    AI = ai()
+    #AI = ai()
+    names = ["AI_01","AI_02"]
+    threads = []
+    for n in names:
+        threads.append(Thread(target=ai,args=(n,),daemon=True))
+        threads[-1].start()
+    for t in threads:
+        t.join()
 #    log("Test")
 #    AI.initField()
 #    AI.field['1']['2']=AI.name

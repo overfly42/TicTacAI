@@ -90,6 +90,7 @@ public class RuleBasedAI extends Player {
             case StartGame:
                 sendBasicMessage(Message.PlayerReady);
                 LastMessage = Message.StartGame;
+                resetField();
                 break;
             case Set:
                 set(content);
@@ -103,9 +104,10 @@ public class RuleBasedAI extends Player {
                 resetField();
                 break;
             case SetRejected:
-                if (content.get(Keys.Reason).equals("Field not empty"))
+                if (content.get(Keys.Reason).equals("Field not empty")) {
+                    set(content);
                     turn();
-                else
+                } else
                     System.out.println("(" + gameID + ") Sorry not my Turn");
                 break;
             default:
@@ -116,17 +118,17 @@ public class RuleBasedAI extends Player {
     }
 
     private void turn() {
-        int timeout = 10;
-        try {
-            while (timeout-- > 0 && LastMessage != Message.Set)
-                Thread.sleep(100);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // int timeout = 10;
+        // try {
+        //     while (timeout-- > 0 && LastMessage != Message.Set)
+        //         Thread.sleep(100);
+        // } catch (InterruptedException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
         Map<Keys, String> content = new HashMap<>();
         content.put(Keys.ID, getId());
-        int middle = FIELD_SIZE / 2;
+        // int middle = FIELD_SIZE / 2;
         // if (internalRepresentation[middle][middle] == FieldState.Empty) {
         // //If the middle position is free, take it as it is the
         // content.put(Keys.X, "" + middle);
@@ -155,6 +157,8 @@ public class RuleBasedAI extends Player {
             System.out.println(String.format("X=%d Y=%d my=%d; op=%d", element[0], element[1], element[2], element[3]));
         if (possibleMoves.isEmpty()) {
             System.out.println("NO More moves possible...");
+            resetField();
+            turn();
             return;
         }
         int selectionMode = 2;

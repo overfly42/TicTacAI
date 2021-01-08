@@ -83,6 +83,7 @@ public class GameStateWaitForAction implements IGameState, IChangeListener {
         else if( content.get(Keys.ID).equals(playerId)){
             Message returnMessage = Message.SetRejected;
             content.put(Keys.Reason, "Field not empty");
+            content.put(Keys.Player, board.getStateOfField(x, y)==FieldState.PlayerA ?board.getPlayerA():board.getPlayerB());
             com.sendMessage(returnMessage, content);
         }
         else
