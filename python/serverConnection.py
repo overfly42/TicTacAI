@@ -243,7 +243,7 @@ class ai:
         self.randomDecrease = 0.001
         self.round = 0
 
-        self.network = NeuralNet.Network(180,3).to("cuda")
+        self.network = NeuralNet.Network(180,3).to("cpu")
 
         self.rxChannel.start_consuming()
 #connection.close()
