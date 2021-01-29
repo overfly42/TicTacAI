@@ -13,9 +13,17 @@ from copy import deepcopy
 from matplotlib import pyplot as plt    
 from matplotlib import style    
 from threading import Thread
+from enum import Enum
+import NeuralNet as NeuralNet
 
 def log(msg):
-    print(msg)
+    #print(msg)
+    pass
+class stragegy(Enum):
+    random = 1
+    rl_map = 2
+    rl_nn = 3
+
 class ai:
     def callback(self, ch, method, properties, body):
         msg = str(body)
@@ -49,7 +57,12 @@ class ai:
     def Turn(self,content):
         #msg = self.Rowvise()
         #msg=self.Random()
-        msg = self.Inteligent()
+        if self.type == stragegy.random:
+            msg = self.Random()
+        elif self.type == stragegy.rl_map:
+            msg = self.Inteligent()
+        elif self.type == stragegy.rl_nn:
+            msg = self.useNetwork()
         #log("vvvvvvvvvvvvvvvvvvPossible Movesvvvvvvvvvvvvvvvvvvvv")
         #log(self.getPossibleMoves())
         #log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
@@ -93,11 +106,27 @@ class ai:
         field[bestMoveX][bestMoveY] = self.name
         self.history.append(self.hash(field))
         return "Set:ID={}:X={}:Y={}".format(self.name,bestMoveX,bestMoveY)
-
-
+    def useNetwork(self)->str:
+        nnInput= []
+        for r in self.field.keys():
+            for l in self.field[r].keys():
+                if self.field[r][l] == '-':
+                    nnInput.append(0)
+                elif self.field[r][l] == self.name:
+                    nnInput.append(1)
+                else:
+                    nnInput.append(-1)
+        x,y=  self.network.selectMove(nnInput)
+        return "Set:ID={}:X={}:Y={}".format(self.name,x,y)
+        
     def EndGame(self,content):
-        print(content)
-        print(self.results)
+        self.round += 1
+        self.train(content)
+        pass
+
+    def train(self,content):
+        log(content)
+        log(self.results)
         learningRate = self.learningRate
         rewardValue = 0
         for key in self.results.keys():
@@ -110,6 +139,11 @@ class ai:
                     rewardValue = self.rewardWin
                 else:
                     rewardValue = self.rewardLose
+        if self.type == stragegy.rl_map:
+            self.trainMap(rewardValue)
+        elif self.type == stragegy.rl_nn:
+            self.network.train(reward=rewardValue,printLoss=self.round%100==0)
+    def trainMap(self,rewardValue):
         for turn in self.history:
             log("Reward is {} for {}".format(rewardValue,turn))
             if not turn in self.states.keys():
@@ -129,7 +163,7 @@ class ai:
         plt.plot(x, self.results["PlayerB"], 'r', label='PlayerB', linewidth=1)  
         plt.plot(x, self.results["Tie"], 'g', label='Tie', linewidth=1)    
         plt.legend(["PlayerA","PlayerB","Tie"],loc=4)
-        plt.title("AI is {}".format(self.comName))    
+        plt.title("AI is {} ({})".format(self.comName,self.name))    
         #fig = plt.figure()    
       
         plt.show()  
@@ -137,7 +171,8 @@ class ai:
         log(self.comName)
         log(self.results)
         self.results = {"PlayerA":[0],"PlayerB":[0],"Tie":[0]}
-        print(self.states)
+        log(self.states)
+        self.round = 0
         pass
     def RegisterSuccess(self, content):
         log("I am {}.".format(content["Player"]))
@@ -169,7 +204,8 @@ class ai:
         s=set(lll)
         if '-' in s:
             s.remove('-')
-        s.remove(self.name)
+        if self.name in s:
+            s.remove(self.name)
         item = None if len(s) == 0 else  s.pop()
         if item != None:
             lll = [x.replace(item,'X') for x in lll]
@@ -178,8 +214,9 @@ class ai:
         
         #elements = set((list(x.values() for x in field.values())))
         #print(elements)
-    def __init__(self, name = "AI_01"):
+    def __init__(self, name = "AI_01", type=stragegy.rl_map):
         self.name = name
+        self.type = type
         self.field={'0':{'0':"-"}, '1':{'0':"-"}}
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         self.rxChannel = connection.channel()
@@ -204,6 +241,9 @@ class ai:
         self.decay=0.8
         self.randomChoise = 0.2
         self.randomDecrease = 0.001
+        self.round = 0
+
+        self.network = NeuralNet.Network(180,3).to("cuda")
 
         self.rxChannel.start_consuming()
 #connection.close()
@@ -225,11 +265,17 @@ if __name__ == "__main__":
       
     #plt.show()  
     #AI = ai()
-    names = ["AI_01","AI_02"]
+    #names = ["AI_01","AI_02"]
+    names = ["AI_01"]
     threads = []
     for n in names:
-        threads.append(Thread(target=ai,args=(n,),daemon=True))
+        threads.append(Thread(target=ai,args=(names[0],stragegy.rl_nn),daemon=True))
         threads[-1].start()
+#    threads.append(Thread(target=ai,args=(names[1],stragegy.rl_map),daemon=True))
+#    threads[-1].start()
+    #n = NeuralNet.Network(20,2)
+    #result = n.selectMove([0,0,0,0,0,0,0,0,0])
+    #print(result)
     for t in threads:
         t.join()
 #    log("Test")
