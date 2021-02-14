@@ -14,7 +14,8 @@ from matplotlib import pyplot as plt
 from matplotlib import style    
 from threading import Thread
 from enum import Enum
-import NeuralNet as NeuralNet
+import NeuralNet_alternative as NeuralNet2
+import NeuralNet as NeuralNet1
 
 def log(msg):
     #print(msg)
@@ -23,6 +24,7 @@ class stragegy(Enum):
     random = 1
     rl_map = 2
     rl_nn = 3
+    rl_nn_alt = 4
 
 class ai:
     def callback(self, ch, method, properties, body):
@@ -63,6 +65,8 @@ class ai:
             msg = self.Inteligent()
         elif self.type == stragegy.rl_nn:
             msg = self.useNetwork()
+        elif self.type == stragegy.rl_nn_alt:
+            msg = self.useNetowrkAlt()
         #log("vvvvvvvvvvvvvvvvvvPossible Movesvvvvvvvvvvvvvvvvvvvv")
         #log(self.getPossibleMoves())
         #log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
@@ -119,6 +123,18 @@ class ai:
         x,y=  self.network.selectMove(nnInput)
         return "Set:ID={}:X={}:Y={}".format(self.name,x,y)
         
+    def useNetowrkAlt(self)->str:
+        nnInput= []
+        for r in self.field.keys():
+            for l in self.field[r].keys():
+                if self.field[r][l] == '-':
+                    nnInput.append(0)
+                elif self.field[r][l] == self.name:
+                    nnInput.append(1)
+                else:
+                    nnInput.append(-1)
+        x,y=  self.network_alt.selectMove(nnInput)
+        return "Set:ID={}:X={}:Y={}".format(self.name,x,y)
     def EndGame(self,content):
         self.round += 1
         self.train(content)
@@ -143,6 +159,8 @@ class ai:
             self.trainMap(rewardValue)
         elif self.type == stragegy.rl_nn:
             self.network.train(reward=rewardValue,printLoss=self.round%100==0)
+        elif self.type == stragegy.rl_nn_alt:
+            self.network_alt.train(reward=rewardValue,printLoss=self.round%100==0)
     def trainMap(self,rewardValue):
         for turn in self.history:
             log("Reward is {} for {}".format(rewardValue,turn))
@@ -243,7 +261,8 @@ class ai:
         self.randomDecrease = 0.001
         self.round = 0
 
-        self.network = NeuralNet.Network(180,3).to("cpu")
+        self.network = NeuralNet1.Network(180,3).to("cpu")
+        self.network_alt = NeuralNet2.Network(180,3).to("cpu")
 
         self.rxChannel.start_consuming()
 #connection.close()
@@ -265,14 +284,14 @@ if __name__ == "__main__":
       
     #plt.show()  
     #AI = ai()
-    #names = ["AI_01","AI_02"]
-    names = ["AI_01"]
+    names = ["AI_01","AI_02"]
+    #names = ["AI_01"]
     threads = []
-    for n in names:
-        threads.append(Thread(target=ai,args=(names[0],stragegy.rl_nn),daemon=True))
-        threads[-1].start()
-#    threads.append(Thread(target=ai,args=(names[1],stragegy.rl_map),daemon=True))
-#    threads[-1].start()
+    #for n in names:
+    threads.append(Thread(target=ai,args=(names[0],stragegy.rl_nn_alt),daemon=True))
+    threads[-1].start()
+    threads.append(Thread(target=ai,args=(names[1],stragegy.rl_map),daemon=True))
+    threads[-1].start()
     #n = NeuralNet.Network(20,2)
     #result = n.selectMove([0,0,0,0,0,0,0,0,0])
     #print(result)

@@ -5,7 +5,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 from random import random,randrange,sample
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class Network(nn.Module):
     def __init__(self,H,n):
@@ -16,7 +16,7 @@ class Network(nn.Module):
         n = n if n >=0 else 0
         super(Network,self).__init__()
         #input vector: field configuration + selected move
-        self.modelIn = nn.Linear(18,H)
+        self.modelIn = nn.Linear(18,H).to(device)
         #self.modelIn = nn.Linear(9,H)
         self.hidden = []
         for i in range(n):
@@ -27,7 +27,7 @@ class Network(nn.Module):
 
         self.memory = []
         self.optimizer = optim.RMSprop(self.parameters())
-        self.randomValue = 0.75
+        self.randomValue = 0.9
         self.randomDecay = 0.001
         self.epoch = 10
         self.currentEpoch = 0
@@ -40,7 +40,7 @@ class Network(nn.Module):
         TicTacToe Field
         results in a Tensor 
         '''
-        relu = self.modelIn(x).clamp(min=0).to(device)
+        relu = self.modelIn(x).to(device)#.clamp(min=0).to(device)
         for layer in self.hidden:
             relu = layer(relu).clamp(min=0).to(device)
         pred = self.modelOut(relu)
@@ -75,12 +75,19 @@ class Network(nn.Module):
         inputs = self.createInputs(torch.tensor(input,dtype=torch.float,device=device))
         lastBestValue = float("-inf")
         selectedTile = -1
-        for i in inputs:
-            value = self(i[0])
-            if value > lastBestValue:
-                lastBestValue = value
-                selectedTile = i[1]
-                input = i[0]
+        if random() < self.randomValue:
+            item = sample(inputs,1)[0]
+            lastBestValue = self(item[0])
+            selectedTile=item[1]
+            input = item[0]
+            self.randomValue -= self.randomDecay
+        else:
+            for i in inputs:
+                value = self(i[0])
+                if value > lastBestValue:
+                    lastBestValue = value
+                    selectedTile = i[1]
+                    input = i[0]
         self.memory.append([input,lastBestValue])
         return (int(selectedTile/3),selectedTile%3)
 
